@@ -2,9 +2,72 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import nodemailer from 'nodemailer';
 import { executeQuery } from '../config/snowflake.js';
 
 const router = express.Router();
+
+// Configure email transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Send password reset email
+async function sendPasswordResetEmail(email, name, resetToken) {
+  const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+  
+  const mailOptions = {
+    from: `"Credence" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: 'Reset Your Credence Password',
+    html: `
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #ec4899; margin: 0;">Credence</h1>
+          <p style="color: #64748b; margin-top: 5px;">Your Financial Identity Platform</p>
+        </div>
+        
+        <div style="background: #f8fafc; border-radius: 12px; padding: 30px; margin-bottom: 20px;">
+          <h2 style="color: #1e293b; margin-top: 0;">Hi ${name || 'there'},</h2>
+          <p style="color: #475569; line-height: 1.6;">
+            We received a request to reset your password. Click the button below to create a new password:
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetLink}" 
+               style="background: linear-gradient(135deg, #f472b6 0%, #c084fc 50%, #818cf8 100%);
+                      color: white;
+                      padding: 14px 32px;
+                      text-decoration: none;
+                      border-radius: 8px;
+                      font-weight: 600;
+                      display: inline-block;">
+              Reset Password
+            </a>
+          </div>
+          
+          <p style="color: #64748b; font-size: 14px;">
+            This link will expire in <strong>1 hour</strong>.
+          </p>
+          
+          <p style="color: #64748b; font-size: 14px;">
+            If you didn't request this, you can safely ignore this email.
+          </p>
+        </div>
+        
+        <div style="text-align: center; color: #94a3b8; font-size: 12px;">
+          <p>© ${new Date().getFullYear()} Credence. All rights reserved.</p>
+        </div>
+      </div>
+    `
+  };
+
+  await transporter.sendMail(mailOptions);
+}
 
 // Register new user
 router.post('/register', async (req, res) => {
@@ -136,15 +199,24 @@ router.post('/forgot-password', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    // In production, you would send an email here with the reset link
-    // For now, we'll just log it and return success
-    console.log(`Password reset token for ${email}: ${resetToken}`);
-    console.log(`Reset link: http://localhost:5173/reset-password?token=${resetToken}`);
+    // Send password reset email
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      try {
+        await sendPasswordResetEmail(user.EMAIL, user.NAME, resetToken);
+        console.log(`Password reset email sent to ${email}`);
+      } catch (emailError) {
+        console.error('Failed to send email:', emailError.message);
+        // Still log the token for development fallback
+        console.log(`Reset link: http://localhost:5173/reset-password?token=${resetToken}`);
+      }
+    } else {
+      // No email configured, log token for development
+      console.log(`Password reset token for ${email}: ${resetToken}`);
+      console.log(`Reset link: http://localhost:5173/reset-password?token=${resetToken}`);
+    }
 
     res.json({ 
-      message: 'If an account exists with this email, a reset link has been sent',
-      // In development, include the token for testing
-      ...(process.env.NODE_ENV !== 'production' && { resetToken })
+      message: 'If an account exists with this email, a reset link has been sent'
     });
   } catch (error) {
     console.error('Forgot password error:', error);
