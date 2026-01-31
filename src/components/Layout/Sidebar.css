@@ -153,6 +153,19 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
 .upgrade-card {
     background: rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-xl);

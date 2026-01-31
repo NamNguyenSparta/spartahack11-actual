@@ -1,0 +1,266 @@
+.documents-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.upload-section h2,
+.documents-list-section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.upload-section > p {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.upload-controls {
+  margin-bottom: 1.5rem;
+}
+
+.type-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 300px;
+}
+
+.type-selector label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #d1d5db;
+}
+
+.type-selector select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.type-selector select:focus {
+  border-color: #10b981;
+}
+
+.type-selector select option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 2rem;
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-dropzone:hover:not(.uploading) {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.upload-dropzone.active {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.upload-dropzone.uploading {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.upload-dropzone svg {
+  color: #6b7280;
+}
+
+.upload-dropzone span {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+.upload-hint {
+  color: #6b7280 !important;
+  font-size: 0.75rem !important;
+}
+
+.upload-error {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 0.5rem;
+  color: #f87171;
+  font-size: 0.875rem;
+}
+
+.documents-loading,
+.documents-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem;
+  color: #6b7280;
+}
+
+.documents-empty svg {
+  opacity: 0.5;
+}
+
+.documents-empty p {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.documents-empty span {
+  font-size: 0.875rem;
+}
+
+.documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  transition: background 0.2s ease;
+}
+
+.document-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.document-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 0.5rem;
+  color: #10b981;
+}
+
+.document-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.document-name {
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.document-meta {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.document-status {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+}
+
+.status-processing {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.status-verified {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.status-rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.document-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.document-delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .document-item {
+    flex-wrap: wrap;
+  }
+
+  .document-info {
+    flex: 1 1 calc(100% - 60px);
+  }
+
+  .document-status {
+    order: 4;
+    margin-left: 60px;
+  }
+
+  .document-delete {
+    order: 3;
+  }
+}

@@ -812,3 +812,25 @@ a:hover {
   background: rgba(236, 72, 153, 0.2);
   color: var(--text-primary);
 }
+
+/* Loading Screen */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+  color: #9ca3af;
+}
+
+.loading-screen .spin {
+  color: #10b981;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

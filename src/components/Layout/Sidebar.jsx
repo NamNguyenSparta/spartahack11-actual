@@ -1,10 +1,18 @@
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, FileCheck, ShieldCheck, Wallet, CreditCard, PiggyBank, GraduationCap, Receipt, TrendingUp, Settings, HelpCircle, Bell, LogOut } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, BarChart3, FileCheck, ShieldCheck, Wallet, CreditCard, PiggyBank, GraduationCap, Receipt, TrendingUp, Settings, HelpCircle, Bell, LogOut, FileText } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import './Sidebar.css';
 
 export default function Sidebar() {
     const { currentPersona } = useApp();
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/auth');
+    };
 
     const mainNav = [
         { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -19,6 +27,7 @@ export default function Sidebar() {
         { path: '/analytics', icon: BarChart3, label: 'Analytics' },
         { path: '/passport', icon: FileCheck, label: 'Passport' },
         { path: '/verify', icon: ShieldCheck, label: 'Verification' },
+        { path: '/documents', icon: FileText, label: 'Documents' },
     ];
 
     return (
@@ -33,10 +42,10 @@ export default function Sidebar() {
 
             {/* User Profile Card */}
             <div className="user-card">
-                <div className="user-avatar">{currentPersona.avatar}</div>
+                <div className="user-avatar">{user?.name?.charAt(0).toUpperCase() || 'U'}</div>
                 <div className="user-info">
-                    <span className="user-name">{currentPersona.name}</span>
-                    <span className="user-type">{currentPersona.type}</span>
+                    <span className="user-name">{user?.name || 'User'}</span>
+                    <span className="user-type">{user?.email || ''}</span>
                 </div>
                 <button className="notification-btn">
                     <Bell size={18} />
@@ -74,6 +83,9 @@ export default function Sidebar() {
                     <NavLink to="/help" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
                         <HelpCircle size={20} /><span>Help Center</span>
                     </NavLink>
+                    <button className="nav-item logout-btn" onClick={handleLogout}>
+                        <LogOut size={20} /><span>Logout</span>
+                    </button>
                 </div>
             </nav>
 
