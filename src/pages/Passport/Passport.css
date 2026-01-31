@@ -1,330 +1,359 @@
+.passport {
+    max-width: 800px;
+}
+
+/* Empty State */
 .passport-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
     text-align: center;
-    gap: var(--space-4);
+    padding: var(--space-12) var(--space-8);
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-2xl);
 }
 
 .empty-icon {
-    color: var(--text-muted);
-    opacity: 0.5;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto var(--space-6);
+    background: var(--gradient-card);
+    border-radius: var(--radius-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-500);
 }
 
 .passport-empty h2 {
     font-size: 1.5rem;
+    margin-bottom: var(--space-3);
 }
 
-.passport-empty p {
-    color: var(--text-tertiary);
+.passport-empty>p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-6);
     max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.passport-container {
-    display: grid;
-    grid-template-columns: 400px 1fr;
+.empty-features {
+    display: flex;
+    justify-content: center;
     gap: var(--space-6);
+    margin-bottom: var(--space-8);
 }
 
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.feature-item svg {
+    color: var(--success-500);
+}
+
+/* Passport Card */
 .passport-card {
     background: var(--bg-card);
-    border: 1px solid rgba(236, 72, 153, 0.2);
+    border: 1px solid var(--border-light);
     border-radius: var(--radius-2xl);
-    padding: var(--space-6);
+    padding: var(--space-8);
+    margin-bottom: var(--space-8);
+    box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
-    box-shadow: var(--shadow-card);
 }
 
 .passport-card::before {
     content: '';
     position: absolute;
     top: 0;
+    left: 0;
     right: 0;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
-    pointer-events: none;
+    height: 6px;
+    background: var(--gradient-primary);
 }
 
 .passport-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-8);
 }
 
 .passport-logo {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    color: var(--primary-500);
-    font-size: 1.25rem;
-    font-weight: 700;
+    gap: var(--space-3);
 }
 
-.verified-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: var(--radius-full);
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #059669;
-}
-
-.passport-profile {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
-}
-
-.passport-avatar {
-    width: 64px;
-    height: 64px;
+.passport-logo .logo-icon {
+    width: 48px;
+    height: 48px;
     background: var(--gradient-primary);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
     color: white;
-    box-shadow: var(--shadow-pink);
 }
 
-.passport-info h2 {
-    font-size: 1.5rem;
-    margin-bottom: 4px;
+.logo-name {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
-.passport-info p {
-    color: var(--text-tertiary);
-    font-size: 0.875rem;
-    margin: 0;
-}
-
-.passport-score {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-5);
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-xl);
-    margin-bottom: var(--space-6);
-}
-
-.score-big {
-    font-size: 3rem;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.score-label-big {
+.logo-subtitle {
     display: block;
     font-size: 0.75rem;
     color: var(--text-tertiary);
-    margin-bottom: 4px;
-}
-
-.score-rating {
-    font-size: 1.125rem;
-    font-weight: 600;
-}
-
-.passport-behaviors {
-    margin-bottom: var(--space-6);
-}
-
-.passport-behaviors h4 {
-    font-size: 0.75rem;
-    color: var(--text-tertiary);
-    margin-bottom: var(--space-3);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-.behavior-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
-}
-
-.behavior-item {
-    display: flex;
-    justify-content: space-between;
-    padding: var(--space-3);
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
-}
-
-.behavior-name {
-    font-size: 0.8rem;
-    color: var(--text-tertiary);
-}
-
-.behavior-value {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--accent-emerald);
-}
-
-.passport-id {
-    display: flex;
-    justify-content: space-between;
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--neutral-200);
-    font-size: 0.8rem;
-    color: var(--text-tertiary);
-}
-
-.passport-id code {
-    background: var(--bg-tertiary);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-family: 'SF Mono', monospace;
-    color: var(--text-primary);
-}
-
-.verification-panel {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-}
-
-.verification-panel .card {
-    padding: var(--space-5);
-}
-
-.verification-panel .card h3 {
+.passport-badge {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    margin-bottom: var(--space-4);
-    font-size: 0.875rem;
+    padding: var(--space-2) var(--space-4);
+    background: var(--success-100);
+    border: 1px solid var(--success-200);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--success-600);
 }
 
-.privacy-notice {
-    padding: var(--space-4);
-    background: rgba(16, 185, 129, 0.05);
-    border: 1px solid rgba(16, 185, 129, 0.15);
+/* Score Section */
+.passport-score-section {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    padding: var(--space-6);
+    background: var(--gradient-card);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+}
+
+.passport-score {
+    text-align: center;
+    padding: var(--space-4) var(--space-8);
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.passport-score .score-value {
+    display: block;
+    font-size: 4rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.passport-score .score-label {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: var(--space-2);
+}
+
+.score-meta {
+    flex: 1;
+}
+
+.confidence {
+    font-size: 0.9rem;
+    margin-bottom: var(--space-3);
+}
+
+.confidence.success {
+    color: var(--success-600);
+}
+
+.confidence.warning {
+    color: var(--warning-600);
+}
+
+.confidence.danger {
+    color: var(--danger-600);
+}
+
+.persona-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.persona-info .avatar {
+    font-size: 1.25rem;
+}
+
+/* Summary */
+.passport-summary {
+    margin-bottom: var(--space-6);
+}
+
+.passport-summary h3 {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-4);
+}
+
+.summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--gray-50);
     border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+}
+
+.summary-item.verified {
+    background: var(--success-50);
+    color: var(--success-700);
+}
+
+.summary-item.verified svg {
+    color: var(--success-500);
+}
+
+.summary-item.warning {
+    background: var(--warning-50);
+    color: var(--warning-700);
+}
+
+.summary-item.warning svg {
+    color: var(--warning-500);
+}
+
+/* Privacy Notice */
+.privacy-notice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--primary-50);
+    border: 1px solid var(--primary-100);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-6);
+}
+
+.privacy-notice svg {
+    color: var(--primary-500);
+    flex-shrink: 0;
 }
 
 .privacy-notice p {
-    font-size: 0.875rem;
-    margin-bottom: var(--space-2);
-    color: var(--text-secondary);
+    font-size: 0.85rem;
+    color: var(--primary-700);
+    margin: 0;
 }
 
-.privacy-notice p:last-child {
-    margin-bottom: 0;
-}
-
-.proof-details {
+/* Share */
+.passport-share {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-}
-
-.proof-item {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: var(--space-2) 0;
-    border-bottom: 1px solid var(--neutral-100);
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border-light);
 }
 
-.proof-item:last-child {
-    border-bottom: none;
-}
-
-.proof-label {
-    font-size: 0.8rem;
-    color: var(--text-tertiary);
-}
-
-.proof-value-row {
+.share-link {
     display: flex;
     align-items: center;
     gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--gray-100);
+    border-radius: var(--radius-lg);
+    flex: 1;
 }
 
-.proof-hash,
-.proof-tx {
-    font-size: 0.75rem;
-    background: var(--bg-tertiary);
-    padding: 4px 8px;
-    border-radius: 4px;
+.share-link svg {
+    color: var(--text-tertiary);
+}
+
+.share-url {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
     font-family: 'SF Mono', 'Monaco', monospace;
-    color: var(--text-primary);
 }
 
-.proof-value {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-primary);
+/* Proof Section */
+.proof-section h2 {
+    margin-bottom: var(--space-5);
 }
 
-.proof-status.confirmed {
-    color: #059669;
-    font-weight: 600;
+.proof-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
 }
 
-.judge-card {
-    background: rgba(245, 158, 11, 0.05) !important;
-    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+.proof-card {
+    padding: var(--space-5);
+    text-align: center;
 }
 
-.judge-card h3 {
-    color: var(--accent-amber);
+.proof-icon {
+    margin-bottom: var(--space-3);
 }
 
-.judge-content {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
+.proof-icon.success {
+    color: var(--success-500);
 }
 
-.judge-content ul {
-    margin: var(--space-2) 0 var(--space-3) var(--space-4);
-}
-
-.judge-content li {
-    margin-bottom: var(--space-1);
-}
-
-.share-section {
-    margin-top: var(--space-4);
-}
-
-.w-full {
-    width: 100%;
-}
-
-.btn-icon {
-    background: var(--bg-tertiary);
-    border: 1px solid var(--neutral-200);
-    border-radius: var(--radius-md);
-    padding: 6px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.btn-icon:hover {
-    border-color: var(--primary-400);
+.proof-icon.info {
     color: var(--primary-500);
 }
 
-@media (max-width: 900px) {
-    .passport-container {
+.proof-icon.purple {
+    color: var(--secondary-500);
+}
+
+.proof-card h4 {
+    font-size: 0.95rem;
+    margin-bottom: var(--space-2);
+}
+
+.proof-card p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .passport-score-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .proof-grid {
         grid-template-columns: 1fr;
+    }
+
+    .empty-features {
+        flex-direction: column;
+        align-items: center;
     }
 }

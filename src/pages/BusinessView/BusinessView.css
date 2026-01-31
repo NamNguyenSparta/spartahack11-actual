@@ -1,0 +1,369 @@
+.business-view {
+    max-width: 1100px;
+}
+
+.business-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--secondary-100);
+    border: 1px solid var(--secondary-200);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--secondary-600);
+}
+
+/* Applicant Card */
+.applicant-card {
+    padding: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.applicant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.applicant-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.applicant-avatar {
+    width: 56px;
+    height: 56px;
+    background: var(--gradient-card);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-500);
+}
+
+.applicant-info h2 {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+}
+
+.applicant-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.applicant-actions {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.applicant-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--gray-50);
+    border-radius: var(--radius-xl);
+    text-align: center;
+}
+
+.stat-box .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.stat-box .stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+.stat-box.trust-score .stat-value {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-box .stat-value.success {
+    color: var(--success-600);
+}
+
+.stat-box .stat-value.warning {
+    color: var(--warning-600);
+}
+
+.stat-box .stat-value.danger {
+    color: var(--danger-600);
+}
+
+/* Indicators */
+.indicators-section {
+    margin-bottom: var(--space-8);
+}
+
+.indicators-section h2 {
+    margin-bottom: var(--space-5);
+}
+
+.indicators-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-5);
+}
+
+.indicator-card {
+    padding: var(--space-5);
+}
+
+.indicator-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.indicator-icon {
+    font-size: 1.25rem;
+}
+
+.indicator-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.indicator-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.indicator-status {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.indicator-status.success {
+    color: var(--success-600);
+}
+
+.indicator-status.warning {
+    color: var(--warning-600);
+}
+
+.indicator-status.danger {
+    color: var(--danger-600);
+}
+
+.indicator-score {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+/* Trust Section */
+.trust-section {
+    margin-bottom: var(--space-8);
+}
+
+.trust-card {
+    padding: var(--space-6);
+}
+
+.trust-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-6);
+}
+
+.trust-header h2 {
+    margin-bottom: var(--space-2);
+}
+
+.trust-header p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.trust-icon {
+    color: var(--primary-400);
+}
+
+.trust-factors {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+}
+
+.trust-factor {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+}
+
+.trust-factor.positive {
+    background: var(--success-50);
+    color: var(--success-700);
+}
+
+.trust-factor.positive .factor-icon {
+    color: var(--success-500);
+}
+
+.trust-factor.negative {
+    background: var(--danger-50);
+    color: var(--danger-700);
+}
+
+.trust-factor.negative .factor-icon {
+    color: var(--danger-500);
+}
+
+/* Details Section */
+.details-section {
+    margin-bottom: var(--space-8);
+}
+
+.details-section h2 {
+    margin-bottom: var(--space-5);
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+}
+
+.detail-card {
+    padding: var(--space-5);
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+}
+
+.detail-icon {
+    font-size: 1.25rem;
+}
+
+.detail-header h3 {
+    font-size: 0.95rem;
+}
+
+.detail-stats {
+    display: flex;
+    gap: var(--space-5);
+}
+
+.detail-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.detail-stat .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.detail-stat .value.success {
+    color: var(--success-600);
+}
+
+.detail-stat .value.warning {
+    color: var(--warning-600);
+}
+
+.detail-stat .value.danger {
+    color: var(--danger-600);
+}
+
+.detail-stat .label {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+
+/* Sources Card */
+.sources-card {
+    padding: var(--space-6);
+}
+
+.sources-card h3 {
+    margin-bottom: var(--space-2);
+}
+
+.sources-card>p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+.sources-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.source-badge {
+    padding: var(--space-2) var(--space-3);
+    background: var(--gray-100);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.sources-note {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+    margin: 0;
+}
+
+@media (max-width: 1000px) {
+    .indicators-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .trust-factors {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .applicant-header {
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    .applicant-stats {
+        grid-template-columns: 1fr;
+    }
+}

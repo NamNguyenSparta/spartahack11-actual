@@ -1,0 +1,228 @@
+.verify {
+    min-height: 100vh;
+    padding: 0 var(--space-6);
+}
+
+.verify-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5) 0;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color var(--transition-fast);
+}
+
+.back-btn:hover {
+    color: var(--text-primary);
+}
+
+.header-center {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.verify-main {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--space-8) 0;
+}
+
+.verify-card {
+    padding: var(--space-10);
+    text-align: center;
+}
+
+.verify-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: var(--radius-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-6);
+    color: var(--accent-primary);
+}
+
+.verify-card h1 {
+    font-size: 1.75rem;
+    margin-bottom: var(--space-3);
+}
+
+.verify-card>p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-8);
+}
+
+.verify-input-group {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.verify-input {
+    flex: 1;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.verify-hint {
+    margin-top: var(--space-4);
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+/* Results */
+.result-card {
+    margin-top: var(--space-6);
+    padding: var(--space-8);
+    animation: fadeInUp var(--transition-slow) ease-out;
+}
+
+.result-card.verified {
+    background: linear-gradient(145deg, rgba(16, 185, 129, 0.05) 0%, rgba(24, 27, 32, 0.8) 100%);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.result-card.not-found {
+    background: linear-gradient(145deg, rgba(239, 68, 68, 0.05) 0%, rgba(24, 27, 32, 0.8) 100%);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.result-header {
+    text-align: center;
+    margin-bottom: var(--space-6);
+}
+
+.result-icon {
+    margin-bottom: var(--space-4);
+}
+
+.result-icon.success {
+    color: var(--accent-success);
+}
+
+.result-icon.error {
+    color: var(--accent-danger);
+}
+
+.result-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-2);
+}
+
+.result-header p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.result-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+}
+
+.result-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.result-item svg {
+    color: var(--text-tertiary);
+}
+
+.result-item .label {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+}
+
+.result-item .value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.result-item .value.score {
+    font-size: 1.25rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.result-item .value.link {
+    color: var(--accent-secondary);
+    font-weight: 500;
+}
+
+.result-item .value.link:hover {
+    text-decoration: underline;
+}
+
+.result-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--accent-success);
+}
+
+.result-tips {
+    text-align: left;
+    padding: var(--space-4);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.result-tips p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
+}
+
+.result-tips ul {
+    margin: 0 0 0 var(--space-5);
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+}
+
+.result-tips li {
+    margin-bottom: var(--space-1);
+}
+
+@media (max-width: 600px) {
+    .verify-input-group {
+        flex-direction: column;
+    }
+
+    .verify-card {
+        padding: var(--space-6);
+    }
+}
