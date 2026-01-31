@@ -104,6 +104,54 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const requestPasswordReset = useCallback(async (email) => {
+    setError(null);
+    try {
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send reset email');
+      }
+
+      return { success: true, message: data.message };
+    } catch (err) {
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
+  }, []);
+
+  const resetPassword = useCallback(async (token, newPassword) => {
+    setError(null);
+    try {
+      const response = await fetch(`${API_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token, newPassword })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to reset password');
+      }
+
+      return { success: true, message: data.message };
+    } catch (err) {
+      setError(err.message);
+      return { success: false, error: err.message };
+    }
+  }, []);
+
   const value = {
     user,
     token,
@@ -113,6 +161,8 @@ export function AuthProvider({ children }) {
     register,
     login,
     logout,
+    requestPasswordReset,
+    resetPassword,
     clearError: () => setError(null)
   };
 

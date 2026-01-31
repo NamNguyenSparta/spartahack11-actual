@@ -1,12 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Eye, EyeOff, Loader2, ArrowRight, Shield } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Loader2, ArrowRight, Shield, Check, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
+
+const PASSWORD_REQUIREMENTS = [
+  { id: 'length', label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
+  { id: 'uppercase', label: 'One uppercase letter', test: (pw) => /[A-Z]/.test(pw) },
+  { id: 'lowercase', label: 'One lowercase letter', test: (pw) => /[a-z]/.test(pw) },
+  { id: 'number', label: 'One number', test: (pw) => /\d/.test(pw) },
+  { id: 'special', label: 'One special character (!@#$%^&*)', test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw) },
+];
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -15,9 +24,22 @@ export default function Auth() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [formSuccess, setFormSuccess] = useState('');
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
 
-  const { login, register } = useAuth();
+  const { login, register, requestPasswordReset } = useAuth();
   const navigate = useNavigate();
+
+  const validatePassword = (password) => {
+    return PASSWORD_REQUIREMENTS.every(req => req.test(password));
+  };
+
+  const getPasswordStrength = (password) => {
+    const passed = PASSWORD_REQUIREMENTS.filter(req => req.test(password)).length;
+    if (passed <= 2) return { label: 'Weak', color: 'var(--accent-rose)' };
+    if (passed <= 4) return { label: 'Medium', color: 'var(--accent-amber)' };
+    return { label: 'Strong', color: 'var(--accent-emerald)' };
+  };
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -25,19 +47,42 @@ export default function Auth() {
       [e.target.name]: e.target.value
     }));
     setFormError('');
+    setFormSuccess('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
+    setFormSuccess('');
+
+    if (showForgotPassword) {
+      if (!formData.email) {
+        setFormError('Please enter your email address');
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        const result = await requestPasswordReset(formData.email);
+        if (result.success) {
+          setFormSuccess('Password reset link sent to your email');
+        } else {
+          setFormError(result.error);
+        }
+      } catch (err) {
+        setFormError('An unexpected error occurred');
+      } finally {
+        setIsSubmitting(false);
+      }
+      return;
+    }
 
     if (!isLogin && formData.password !== formData.confirmPassword) {
       setFormError('Passwords do not match');
       return;
     }
 
-    if (formData.password.length < 6) {
-      setFormError('Password must be at least 6 characters');
+    if (!isLogin && !validatePassword(formData.password)) {
+      setFormError('Password does not meet all requirements');
       return;
     }
 
@@ -65,7 +110,9 @@ export default function Auth() {
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
+    setShowForgotPassword(false);
     setFormError('');
+    setFormSuccess('');
     setFormData({
       email: '',
       password: '',
@@ -73,6 +120,20 @@ export default function Auth() {
       confirmPassword: ''
     });
   };
+
+  const handleForgotPassword = () => {
+    setShowForgotPassword(true);
+    setFormError('');
+    setFormSuccess('');
+  };
+
+  const handleBackToLogin = () => {
+    setShowForgotPassword(false);
+    setFormError('');
+    setFormSuccess('');
+  };
+
+  const passwordStrength = getPasswordStrength(formData.password);
 
   return (
     <div className="auth-page">
@@ -82,8 +143,8 @@ export default function Auth() {
             <Shield size={40} />
             <span>Credence</span>
           </div>
-          <h1>{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
-          <p>{isLogin ? 'Sign in to access your Credence Passport' : 'Join Credence to build your financial identity'}</p>
+          <h1>{showForgotPassword ? 'Reset Password' : isLogin ? 'Welcome Back' : 'Create Account'}</h1>
+          <p>{showForgotPassword ? 'Enter your email to receive a reset link' : isLogin ? 'Sign in to access your Credence Passport' : 'Join Credence to build your financial identity'}</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -121,45 +182,83 @@ export default function Auth() {
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <div className="input-wrapper">
-              <Lock size={18} />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                required
-              />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
-
-          {!isLogin && (
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <div className="input-wrapper">
-                <Lock size={18} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm your password"
-                  required={!isLogin}
-                />
+          {!showForgotPassword && (
+            <>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <div className="input-wrapper">
+                  <Lock size={18} />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    onFocus={() => !isLogin && setShowPasswordRequirements(true)}
+                    onBlur={() => setShowPasswordRequirements(false)}
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {!isLogin && formData.password && (
+                  <div className="password-strength">
+                    <div className="strength-bar">
+                      <div 
+                        className="strength-fill" 
+                        style={{ 
+                          width: `${(PASSWORD_REQUIREMENTS.filter(r => r.test(formData.password)).length / PASSWORD_REQUIREMENTS.length) * 100}%`,
+                          backgroundColor: passwordStrength.color 
+                        }} 
+                      />
+                    </div>
+                    <span className="strength-label" style={{ color: passwordStrength.color }}>
+                      {passwordStrength.label}
+                    </span>
+                  </div>
+                )}
+                {!isLogin && (showPasswordRequirements || formData.password) && (
+                  <div className="password-requirements">
+                    {PASSWORD_REQUIREMENTS.map(req => (
+                      <div key={req.id} className={`requirement ${req.test(formData.password) ? 'met' : ''}`}>
+                        {req.test(formData.password) ? <Check size={14} /> : <X size={14} />}
+                        <span>{req.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
+
+              {!isLogin && (
+                <div className="form-group">
+                  <label htmlFor="confirmPassword">Confirm Password</label>
+                  <div className="input-wrapper">
+                    <Lock size={18} />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="Confirm your password"
+                      required={!isLogin}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {isLogin && (
+                <button type="button" className="forgot-password-btn" onClick={handleForgotPassword}>
+                  Forgot your password?
+                </button>
+              )}
+            </>
           )}
 
           {formError && (
@@ -168,19 +267,31 @@ export default function Auth() {
             </div>
           )}
 
+          {formSuccess && (
+            <div className="form-success">
+              {formSuccess}
+            </div>
+          )}
+
           <button type="submit" className="auth-submit-btn" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 size={18} className="spin" />
-                {isLogin ? 'Signing in...' : 'Creating account...'}
+                {showForgotPassword ? 'Sending...' : isLogin ? 'Signing in...' : 'Creating account...'}
               </>
             ) : (
               <>
-                {isLogin ? 'Sign In' : 'Create Account'}
+                {showForgotPassword ? 'Send Reset Link' : isLogin ? 'Sign In' : 'Create Account'}
                 <ArrowRight size={18} />
               </>
             )}
           </button>
+
+          {showForgotPassword && (
+            <button type="button" className="back-to-login-btn" onClick={handleBackToLogin}>
+              Back to Sign In
+            </button>
+          )}
         </form>
 
         <div className="auth-footer">

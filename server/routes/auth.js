@@ -107,6 +107,94 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Forgot password - request reset
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Check if user exists
+    const users = await executeQuery(
+      'SELECT id, email, name FROM users WHERE email = ?',
+      [email.toLowerCase()]
+    );
+
+    // Always return success to prevent email enumeration
+    if (!users || users.length === 0) {
+      return res.json({ message: 'If an account exists with this email, a reset link has been sent' });
+    }
+
+    const user = users[0];
+
+    // Generate reset token (valid for 1 hour)
+    const resetToken = jwt.sign(
+      { userId: user.ID, email: user.EMAIL, purpose: 'password-reset' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // In production, you would send an email here with the reset link
+    // For now, we'll just log it and return success
+    console.log(`Password reset token for ${email}: ${resetToken}`);
+    console.log(`Reset link: http://localhost:5173/reset-password?token=${resetToken}`);
+
+    res.json({ 
+      message: 'If an account exists with this email, a reset link has been sent',
+      // In development, include the token for testing
+      ...(process.env.NODE_ENV !== 'production' && { resetToken })
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ error: 'Failed to process request' });
+  }
+});
+
+// Reset password with token
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: 'Token and new password are required' });
+    }
+
+    // Validate password requirements
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ error: 'Password does not meet requirements' });
+    }
+
+    // Verify token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (decoded.purpose !== 'password-reset') {
+        throw new Error('Invalid token purpose');
+      }
+    } catch (err) {
+      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(newPassword, salt);
+
+    // Update password in database
+    await executeQuery(
+      'UPDATE users SET password_hash = ? WHERE id = ?',
+      [passwordHash, decoded.userId]
+    );
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+});
+
 // Get current user
 router.get('/me', async (req, res) => {
   try {

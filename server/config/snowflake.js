@@ -149,6 +149,17 @@ function executeMockQuery(sqlText, binds) {
     return [];
   }
   
+  // Handle UPDATE users (password reset)
+  if (sql.includes('update users') && sql.includes('password_hash')) {
+    const passwordHash = binds[0];
+    const userId = binds[1];
+    const user = mockStorage.users.find(u => u.ID === userId);
+    if (user) {
+      user.PASSWORD_HASH = passwordHash;
+    }
+    return [];
+  }
+  
   // Handle SELECT document by id and user_id
   if (sql.includes('select') && sql.includes('from documents') && sql.includes('id = ?')) {
     const id = binds[0];
