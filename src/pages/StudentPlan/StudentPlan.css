@@ -1,0 +1,352 @@
+.student-plan-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: auto 1fr;
+    gap: var(--space-6);
+}
+
+.timeline-card {
+    grid-column: 1 / -1;
+    padding: var(--space-6);
+}
+
+.timeline-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+}
+
+.timeline-card .card-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.year-selector {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.year-btn {
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-lg);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-family: inherit;
+}
+
+.year-btn:hover {
+    border-color: var(--primary-400);
+    color: var(--primary-500);
+}
+
+.year-btn.active {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+    box-shadow: var(--shadow-pink);
+}
+
+.year-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+.year-breakdown {
+    padding: var(--space-5);
+}
+
+.year-breakdown .card-header {
+    margin-bottom: var(--space-4);
+}
+
+.year-breakdown .card-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 1rem;
+}
+
+.breakdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-3);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.breakdown-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.breakdown-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.breakdown-summary {
+    border-top: 1px solid var(--neutral-200);
+    padding-top: var(--space-4);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    font-size: 0.875rem;
+}
+
+.summary-row.total {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.summary-row.aid span:last-child {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.summary-row.loans span:last-child {
+    color: #8b5cf6;
+    font-weight: 600;
+}
+
+.summary-row.gap {
+    font-weight: 700;
+    color: #f59e0b;
+    border-top: 1px dashed var(--neutral-200);
+    padding-top: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+.monthly-tracker {
+    padding: var(--space-5);
+}
+
+.monthly-tracker .card-header {
+    margin-bottom: var(--space-4);
+}
+
+.monthly-tracker .card-header h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 1rem;
+}
+
+.expense-bars {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.expense-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.expense-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 140px;
+}
+
+.expense-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.expense-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.expense-bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.expense-bar {
+    height: 8px;
+    background: var(--neutral-100);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.expense-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+.expense-amounts {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+}
+
+.expense-amounts span {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.budget-amount {
+    color: var(--text-tertiary) !important;
+}
+
+.milestones-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+.milestones-card {
+    padding: var(--space-5);
+}
+
+.milestones-card .card-header {
+    margin-bottom: var(--space-4);
+}
+
+.milestones-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.milestone-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    transition: background var(--transition-fast);
+}
+
+.milestone-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.milestone-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.milestone-item.completed .milestone-icon {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.milestone-item.upcoming .milestone-icon {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.milestone-item.future .milestone-icon {
+    background: var(--neutral-100);
+    color: var(--text-tertiary);
+}
+
+.milestone-info {
+    flex: 1;
+}
+
+.milestone-title {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.milestone-date {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.milestone-status {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+}
+
+.milestone-status.completed {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.milestone-status.upcoming {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.milestone-status.future {
+    background: var(--neutral-100);
+    color: var(--text-tertiary);
+}
+
+.savings-card {
+    padding: var(--space-5);
+}
+
+.savings-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    color: #10b981;
+}
+
+.savings-header h4 {
+    font-size: 1rem;
+    color: #059669;
+    margin-bottom: 2px;
+}
+
+.savings-header p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+@media (max-width: 1200px) {
+    .student-plan-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .breakdown-grid {
+        grid-template-columns: 1fr;
+    }
+}

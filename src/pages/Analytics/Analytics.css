@@ -1,0 +1,283 @@
+.analytics-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--space-6);
+}
+
+.analytics-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+.analytics-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+/* Score Factors */
+.score-factors {
+    padding: var(--space-5);
+}
+
+.score-factors .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-5);
+}
+
+.score-factors .card-header h3 {
+    font-size: 1rem;
+}
+
+.factors-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.factor-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    transition: transform var(--transition-fast);
+}
+
+.factor-item:hover {
+    transform: translateX(4px);
+}
+
+.factor-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.factor-item.positive .factor-icon {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.factor-item.negative .factor-icon {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.factor-label {
+    flex: 1;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.factor-points {
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.factor-item.positive .factor-points {
+    color: #059669;
+}
+
+.factor-item.negative .factor-points {
+    color: #dc2626;
+}
+
+/* Charts */
+.chart-card {
+    padding: var(--space-5);
+}
+
+.chart-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+}
+
+.chart-card h3 {
+    font-size: 0.875rem;
+}
+
+.chart-container {
+    height: 200px;
+}
+
+/* Punctuality Widget */
+.punctuality-widget {
+    padding: var(--space-5);
+}
+
+.punctuality-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.punctuality-header h3 {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.punctuality-score {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+}
+
+.punctuality-score .score-big {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-emerald);
+}
+
+.punctuality-score .score-label {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+}
+
+.punctuality-bars {
+    display: flex;
+    gap: var(--space-2);
+    height: 80px;
+    align-items: flex-end;
+}
+
+.punctuality-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.bar-fill {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    min-height: 8px;
+}
+
+.bar-fill.on-time {
+    background: var(--accent-emerald);
+}
+
+.bar-fill.late {
+    background: var(--accent-rose);
+}
+
+.bar-label {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+}
+
+/* Spending Pie */
+.spending-pie {
+    padding: var(--space-5);
+}
+
+.spending-pie .card-header {
+    margin-bottom: var(--space-4);
+}
+
+.spending-pie h3 {
+    font-size: 0.875rem;
+}
+
+.pie-container {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spending-legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.legend-label {
+    flex: 1;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.legend-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Monthly Savings */
+.monthly-savings {
+    padding: var(--space-5);
+}
+
+.monthly-savings .card-header {
+    margin-bottom: var(--space-4);
+}
+
+.monthly-savings h3 {
+    font-size: 0.875rem;
+}
+
+.savings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+}
+
+.savings-item {
+    text-align: center;
+    padding: var(--space-3);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.savings-month {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-1);
+}
+
+.savings-amount {
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.savings-item.positive .savings-amount {
+    color: #059669;
+}
+
+.savings-item.negative .savings-amount {
+    color: #dc2626;
+}
+
+@media (max-width: 1200px) {
+    .analytics-layout {
+        grid-template-columns: 1fr;
+    }
+}

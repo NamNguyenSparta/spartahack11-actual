@@ -1,0 +1,330 @@
+.passport-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    gap: var(--space-4);
+}
+
+.empty-icon {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.passport-empty h2 {
+    font-size: 1.5rem;
+}
+
+.passport-empty p {
+    color: var(--text-tertiary);
+    max-width: 400px;
+}
+
+.passport-container {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: var(--space-6);
+}
+
+.passport-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(236, 72, 153, 0.2);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-6);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.passport-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.passport-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-6);
+}
+
+.passport-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--primary-500);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #059669;
+}
+
+.passport-profile {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.passport-avatar {
+    width: 64px;
+    height: 64px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    box-shadow: var(--shadow-pink);
+}
+
+.passport-info h2 {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
+
+.passport-info p {
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.passport-score {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+}
+
+.score-big {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.score-label-big {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+}
+
+.score-rating {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.passport-behaviors {
+    margin-bottom: var(--space-6);
+}
+
+.passport-behaviors h4 {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.behavior-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+.behavior-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-3);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+}
+
+.behavior-name {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.behavior-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-emerald);
+}
+
+.passport-id {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--neutral-200);
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.passport-id code {
+    background: var(--bg-tertiary);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-family: 'SF Mono', monospace;
+    color: var(--text-primary);
+}
+
+.verification-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+.verification-panel .card {
+    padding: var(--space-5);
+}
+
+.verification-panel .card h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    font-size: 0.875rem;
+}
+
+.privacy-notice {
+    padding: var(--space-4);
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    border-radius: var(--radius-lg);
+}
+
+.privacy-notice p {
+    font-size: 0.875rem;
+    margin-bottom: var(--space-2);
+    color: var(--text-secondary);
+}
+
+.privacy-notice p:last-child {
+    margin-bottom: 0;
+}
+
+.proof-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.proof-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--neutral-100);
+}
+
+.proof-item:last-child {
+    border-bottom: none;
+}
+
+.proof-label {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.proof-value-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.proof-hash,
+.proof-tx {
+    font-size: 0.75rem;
+    background: var(--bg-tertiary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Monaco', monospace;
+    color: var(--text-primary);
+}
+
+.proof-value {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.proof-status.confirmed {
+    color: #059669;
+    font-weight: 600;
+}
+
+.judge-card {
+    background: rgba(245, 158, 11, 0.05) !important;
+    border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+.judge-card h3 {
+    color: var(--accent-amber);
+}
+
+.judge-content {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.judge-content ul {
+    margin: var(--space-2) 0 var(--space-3) var(--space-4);
+}
+
+.judge-content li {
+    margin-bottom: var(--space-1);
+}
+
+.share-section {
+    margin-top: var(--space-4);
+}
+
+.w-full {
+    width: 100%;
+}
+
+.btn-icon {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-md);
+    padding: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+    border-color: var(--primary-400);
+    color: var(--primary-500);
+}
+
+@media (max-width: 900px) {
+    .passport-container {
+        grid-template-columns: 1fr;
+    }
+}
