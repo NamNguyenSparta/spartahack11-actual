@@ -1,193 +1,362 @@
-// Scoring weights for Trust Score calculation
-export const WEIGHTS = {
-    paymentReliability: 0.40,
-    savingsStability: 0.25,
-    incomeConsistency: 0.20,
-    spendingStability: 0.15,
+// ============================================
+// AI AGENT DEFINITIONS
+// ============================================
+export const AI_AGENTS = {
+    payment: {
+        id: 'payment',
+        name: 'Payment Reliability Agent',
+        role: 'Conservative Risk Evaluator',
+        icon: '💳',
+        focus: 'Rent and bill payment history',
+        weight: 0.25,
+        personality: 'conservative',
+        color: 'var(--blue-500)',
+    },
+    savings: {
+        id: 'savings',
+        name: 'Savings Stability Agent',
+        role: 'Long-term Planner',
+        icon: '🏦',
+        focus: 'Savings growth and financial cushion',
+        weight: 0.20,
+        personality: 'cautious',
+        color: 'var(--green-500)',
+    },
+    income: {
+        id: 'income',
+        name: 'Income Consistency Agent',
+        role: 'Income Risk Assessor',
+        icon: '💼',
+        focus: 'Deposit regularity and income volatility',
+        weight: 0.15,
+        personality: 'analytical',
+        color: 'var(--purple-500)',
+    },
+    spending: {
+        id: 'spending',
+        name: 'Spending Behavior Agent',
+        role: 'Behavioral Economist',
+        icon: '📊',
+        focus: 'Spending volatility and unusual spikes',
+        weight: 0.15,
+        personality: 'observant',
+        color: 'var(--orange-500)',
+    },
+    investment: {
+        id: 'investment',
+        name: 'Investment Strategist Agent',
+        role: 'Wealth Builder',
+        icon: '📈',
+        focus: 'Asset diversity and portfolio health',
+        weight: 0.15,
+        personality: 'forward-thinking',
+        color: 'var(--cyan-500)',
+    },
+    risk: {
+        id: 'risk',
+        name: 'Risk Personality Agent',
+        role: 'Overall Risk Sentiment',
+        icon: '🎯',
+        focus: 'Holistic risk assessment and trends',
+        weight: 0.10,
+        personality: 'balanced',
+        color: 'var(--red-500)',
+    },
 };
 
-// Calculate individual pillar scores
-export function calculatePaymentReliabilityScore(data) {
-    const { on_time_count, total_count } = data;
-    if (total_count === 0) return { score: 50, label: 'No Data' };
+// ============================================
+// PILLAR CALCULATIONS
+// ============================================
 
-    const score = Math.round((on_time_count / total_count) * 100);
+export function calculatePaymentReliabilityScore(data) {
+    // If data is just a percentage (from simulator), use it directly
+    if (typeof data === 'number') {
+        return {
+            score: data,
+            label: getStatusLabel(data),
+            onTime: Math.round((data / 100) * 12),
+            total: 12,
+        };
+    }
+
+    const { onTime, total } = data;
+    const score = Math.round((onTime / total) * 100);
+
     return {
         score,
-        label: getScoreLabel(score),
-        onTime: on_time_count,
-        total: total_count,
+        label: getStatusLabel(score),
+        onTime,
+        total,
     };
 }
 
 export function calculateSavingsStabilityScore(data) {
-    const { growth_percent, avg_balance } = data;
-
-    // Score based on growth trend and balance size
-    let score = 50; // Base score
-
-    // Add points for positive growth (max +30)
-    if (growth_percent > 0) {
-        score += Math.min(30, growth_percent * 3);
-    } else {
-        score += Math.max(-20, growth_percent * 2);
+    // Simulator input handling
+    if (typeof data.balance !== 'undefined') {
+        let score = Math.min(100, Math.max(0, (data.balance / 5000) * 100)); // Cap at 5k for max score demo
+        return {
+            score: Math.round(score),
+            label: getStatusLabel(score),
+            trend: '+2.0%',
+            avgBalance: data.balance,
+        };
     }
 
-    // Add points for healthy average balance (max +20)
-    if (avg_balance >= 1000) score += 20;
-    else if (avg_balance >= 500) score += 15;
-    else if (avg_balance >= 200) score += 10;
-    else if (avg_balance >= 100) score += 5;
+    const { trend, avgBalance } = data;
+    const trendValue = parseFloat(trend);
 
-    score = Math.min(100, Math.max(0, Math.round(score)));
+    let score = 50;
+    if (trendValue > 0) {
+        score = Math.min(100, 60 + trendValue * 4);
+    } else {
+        score = Math.max(20, 50 + trendValue * 3);
+    }
+
+    if (avgBalance > 1000) score = Math.min(100, score + 10);
+    if (avgBalance < 300) score = Math.max(20, score - 15);
 
     return {
-        score,
-        label: getScoreLabel(score),
-        trend: `${growth_percent >= 0 ? '+' : ''}${growth_percent}%`,
-        avgBalance: avg_balance,
+        score: Math.round(score),
+        label: getStatusLabel(Math.round(score)),
+        trend,
+        avgBalance,
     };
 }
 
 export function calculateIncomeConsistencyScore(data) {
-    const { months_with_income, avg_deposit, deposit_stddev, source } = data;
+    // Simulator input handling
+    if (typeof data.amount !== 'undefined') {
+        let score = Math.min(100, Math.max(0, (data.amount / 4000) * 100)); // Cap at 4k/mo
+        return {
+            score: Math.round(score),
+            label: getStatusLabel(score),
+            monthsTracked: 6,
+            type: 'Salary',
+        };
+    }
 
-    // Score based on regularity of income
-    let score = 50;
-
-    // Add points for consistent monthly income (max +30)
-    score += months_with_income * 5;
-
-    // Add points for low variability (max +20)
-    const variability = deposit_stddev / (avg_deposit || 1);
-    if (variability < 0.1) score += 20;
-    else if (variability < 0.2) score += 15;
-    else if (variability < 0.3) score += 10;
-    else if (variability < 0.5) score += 5;
-
-    score = Math.min(100, Math.max(0, Math.round(score)));
+    const { months, source } = data;
+    let score = Math.min(100, 50 + months * 8);
+    if (source.toLowerCase().includes('salary')) score = Math.min(100, score + 10);
+    if (source.toLowerCase().includes('variable')) score = Math.max(30, score - 15);
 
     return {
-        score,
-        label: getScoreLabel(score),
-        type: source || 'Unknown',
-        monthsTracked: months_with_income,
+        score: Math.round(score),
+        label: getStatusLabel(Math.round(score)),
+        monthsTracked: months,
+        type: source,
     };
 }
 
 export function calculateSpendingStabilityScore(data) {
-    const { volatility_percent } = data;
+    // Simulator input handling
+    if (typeof data === 'number') {
+        // Input is volatility score (lower is better, but slider usually sets "goodness", so let's assume input is SCORE)
+        return {
+            score: data,
+            label: getStatusLabel(data),
+            volatility: data > 80 ? 'Low' : 'Medium',
+            volatilityRaw: 100 - data,
+        };
+    }
 
-    // Lower volatility = higher score
-    let score = 100 - (volatility_percent || 0);
-    score = Math.min(100, Math.max(0, Math.round(score)));
-
-    let volatility = 'Very High';
-    if (volatility_percent <= 10) volatility = 'Very Low';
-    else if (volatility_percent <= 20) volatility = 'Low';
-    else if (volatility_percent <= 35) volatility = 'Moderate';
-    else if (volatility_percent <= 50) volatility = 'High';
+    const { volatility, pattern } = data;
+    let score = 100 - volatility;
+    if (pattern === 'predictable') score = Math.min(100, score + 5);
+    if (pattern === 'erratic') score = Math.max(30, score - 10);
 
     return {
-        score,
-        label: getScoreLabel(score),
-        volatility,
-        volatilityPercent: volatility_percent,
+        score: Math.round(Math.max(0, Math.min(100, score))),
+        label: getStatusLabel(Math.round(score)),
+        volatility: volatility < 20 ? 'Low' : volatility < 40 ? 'Medium' : 'High',
+        volatilityRaw: volatility,
     };
 }
 
-// Calculate overall Trust Score
-export function calculateTrustScore(signals) {
-    let score = 0;
+export function calculateInvestmentHealthScore(data) {
+    if (!data) return { score: 50, label: 'Moderate', diversity: 'None' };
 
-    for (const [key, weight] of Object.entries(WEIGHTS)) {
-        score += (signals[key]?.score || 0) * weight;
+    // Simulator input
+    if (typeof data.totalValue !== 'undefined') {
+        let score = Math.min(100, Math.max(0, (data.totalValue / 10000) * 100)); // Cap at 10k
+        return {
+            score: Math.round(score),
+            label: getStatusLabel(score),
+            diversity: 'Mixed Portfolio',
+            value: data.totalValue
+        }
     }
 
-    return Math.round(score);
+    const { totalValue, diversity } = data;
+    let score = Math.min(100, (totalValue / 5000) * 80); // Base score on value
+    if (diversity === 'High') score += 20;
+    if (diversity === 'Medium') score += 10;
+
+    return {
+        score: Math.round(Math.min(100, score)),
+        label: getStatusLabel(score),
+        diversity,
+        value: totalValue
+    };
 }
 
-// Get label based on score
-function getScoreLabel(score) {
+// ============================================
+// AGENT ANALYSIS ENGINE
+// ============================================
+
+function generateAgentReasoning(agentId, score, signals) {
+    const reasoningTemplates = {
+        payment: {
+            high: [`Perfect payment history.`, `Zero missed payments detected.`, `Rock-solid bill payment reliability.`],
+            medium: [`Generally pays on time, but some delays.`, `Good habits, minor slips recently.`],
+            low: [`Multiple late payments found.`, `Significant payment reliability issues.`, `Missed deadlines are hurting this score.`],
+        },
+        savings: {
+            high: [`Impressive financial runway built.`, `Strong cash reserves for emergencies.`],
+            medium: [`Savings exist but could be thicker.`, `Moderate buffer against shocks.`],
+            low: [`Living paycheck to paycheck?`, `Dangerous lack of liquidity detected.`],
+        },
+        income: {
+            high: [`Income stream is precise and reliable.`, `Steady airflow into accounts.`],
+            medium: [`Some fluctuation in monthly deposits.`, `Income is decent but variable.`],
+            low: [`Income is highly volatile.`, `Unpredictable earning patterns caused alerts.`],
+        },
+        spending: {
+            high: [`Very disciplined spending control.`, `No impulse buying spikes detected.`],
+            medium: [`Occasional splurge weeks detected.`, `Spending is mostly controlled.`],
+            low: [`Erratic spending spikes detected.`, `High volatility in outflows.`],
+        },
+        investment: {
+            high: [`Portfolio shows sophisticated asset allocation.`, `Strong wealth-building velocity.`, `Diversified assets reduce long-term risk.`],
+            medium: [`Beginning to build asset base.`, `Some investments present, room to grow.`],
+            low: [`Minimal asset accumulation detected.`, `Capital is stagnant in checking.`],
+        },
+        risk: {
+            high: [`Overall profile indicates very low risk.`, `Ideal candidate for premium trust tiers.`],
+            medium: [`Balanced risk profile.`, `Standard risk metrics observed.`],
+            low: [`Elevated risk factors across the board.`, `Caution recommended.`]
+        }
+    };
+
+    const tier = score >= 80 ? 'high' : score >= 50 ? 'medium' : 'low';
+    const templates = reasoningTemplates[agentId][tier] || reasoningTemplates[agentId]['medium'];
+    return templates[Math.floor(Math.random() * templates.length)];
+}
+
+function runAgentAnalysis(agentId, signals) {
+    const agent = AI_AGENTS[agentId];
+    let score = 50;
+    let confidence = 0.7;
+
+    switch (agentId) {
+        case 'payment': score = signals.paymentReliability.score; break;
+        case 'savings': score = signals.savingsStability.score; break;
+        case 'income': score = signals.incomeConsistency.score; break;
+        case 'spending': score = signals.spendingStability.score; break;
+        case 'investment': score = signals.investmentHealth?.score || 50; break;
+        case 'risk':
+            const avgScore = (
+                signals.paymentReliability.score +
+                signals.savingsStability.score +
+                signals.incomeConsistency.score +
+                signals.spendingStability.score +
+                (signals.investmentHealth?.score || 50)
+            ) / 5;
+            score = Math.round(avgScore);
+            break;
+    }
+
+    const reasoning = generateAgentReasoning(agentId, score, signals);
+    const contribution = Math.round(score * agent.weight);
+
+    return {
+        ...agent,
+        score: Math.round(score),
+        contribution,
+        confidence: 85 + Math.floor(Math.random() * 10), // Simulated confidence
+        reasoning,
+        status: score >= 75 ? 'positive' : score >= 50 ? 'neutral' : 'negative',
+    };
+}
+
+export function runMultiAgentAnalysis(signals) {
+    const agentResults = {};
+    let totalWeightedScore = 0;
+
+    Object.keys(AI_AGENTS).forEach(agentId => {
+        const result = runAgentAnalysis(agentId, signals);
+        agentResults[agentId] = result;
+        totalWeightedScore += result.score * AI_AGENTS[agentId].weight;
+    });
+
+    const scores = Object.values(agentResults).map(a => a.score);
+    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const variance = scores.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / scores.length;
+    const consensus = Math.round(100 - (Math.sqrt(variance) / 50) * 100);
+
+    return {
+        agents: agentResults,
+        trustScore: Math.round(totalWeightedScore),
+        consensus: Math.max(0, Math.min(100, consensus)),
+        confidenceLevel: consensus >= 80 ? 'High' : consensus >= 60 ? 'Medium' : 'Low',
+        riskTier: getRiskTier(Math.round(totalWeightedScore)),
+    };
+}
+
+// Generate real-time chat reaction for simulator
+export function generateLiveReaction(changedFactor, newValue, previousValue) {
+    const diff = newValue - previousValue;
+    const direction = diff > 0 ? 'up' : 'down';
+
+    if (Math.abs(diff) < 5) return null; // Ignore small changes
+
+    const reactions = {
+        payment: {
+            up: ["Finally seeing some consistency in payments.", "Reliability factor increasing."],
+            down: ["Missed payments are a major red flag!", "Payment reliability is crashing."]
+        },
+        savings: {
+            up: ["Liquidity buffer expanding. Excellent.", "That's a healthy safety net forming."],
+            down: ["Cash reserves are draining fast!", "We are entering a liquidity danger zone."]
+        },
+        income: {
+            up: ["Income velocity is accelerating.", "Strong cash flow detected."],
+            down: ["Income dropping. Stability is compromised.", "Cash flow interruption detected."]
+        },
+        investment: {
+            up: ["Asset allocation looking very strong.", "Wealth building velocity achieved."],
+            down: ["Portfolio value dropping.", "Asset base is shrinking."]
+        }
+    };
+
+    const agentName = changedFactor; // e.g. 'savings'
+    if (!reactions[agentName]) return null;
+
+    const possibleLines = reactions[agentName][direction];
+    const statement = possibleLines[Math.floor(Math.random() * possibleLines.length)];
+
+    return {
+        agent: AI_AGENTS[agentName].name,
+        icon: AI_AGENTS[agentName].icon,
+        statement,
+        sentiment: direction === 'up' ? 'positive' : 'negative',
+        timestamp: new Date().toLocaleTimeString(),
+    };
+}
+
+// ... existing helpers ...
+export function getRiskTier(score) {
+    if (score >= 80) return 'Low Risk';
+    if (score >= 65) return 'Low-Medium Risk';
+    if (score >= 50) return 'Medium Risk';
+    if (score >= 35) return 'Medium-High Risk';
+    return 'High Risk';
+}
+
+export function getStatusLabel(score) {
     if (score >= 80) return 'Excellent';
     if (score >= 65) return 'Good';
     if (score >= 50) return 'Moderate';
     if (score >= 35) return 'Needs Work';
     return 'Poor';
 }
-
-// Get confidence level
-export function getConfidenceLevel(trustScore) {
-    if (trustScore >= 75) return 'High';
-    if (trustScore >= 50) return 'Medium';
-    return 'Low';
-}
-
-// Get risk tier for business view
-export function getRiskTier(trustScore) {
-    if (trustScore >= 80) return 'Low Risk';
-    if (trustScore >= 65) return 'Low-Medium Risk';
-    if (trustScore >= 50) return 'Medium Risk';
-    if (trustScore >= 35) return 'Medium-High Risk';
-    return 'High Risk';
-}
-
-// Generate scoring factors/insights
-export function generateFactors(signals) {
-    const factors = [];
-
-    // Payment reliability factors
-    if (signals.paymentReliability) {
-        const pr = signals.paymentReliability;
-        if (pr.onTime >= pr.total * 0.9) {
-            factors.push({ text: `${pr.onTime}/${pr.total} payments on time`, type: 'positive' });
-        } else if (pr.onTime < pr.total) {
-            const late = pr.total - pr.onTime;
-            factors.push({ text: `${late} late payment${late > 1 ? 's' : ''} detected`, type: 'negative' });
-        }
-    }
-
-    // Savings factors
-    if (signals.savingsStability) {
-        const ss = signals.savingsStability;
-        if (ss.trend && ss.trend.startsWith('+')) {
-            factors.push({ text: `Stable savings growth (${ss.trend})`, type: 'positive' });
-        } else if (ss.score < 50) {
-            factors.push({ text: 'Low savings buffer detected', type: 'negative' });
-        }
-    }
-
-    // Income factors
-    if (signals.incomeConsistency) {
-        const ic = signals.incomeConsistency;
-        if (ic.score >= 70) {
-            factors.push({ text: 'Regular income deposits', type: 'positive' });
-        } else if (ic.score < 50) {
-            factors.push({ text: 'Irregular income pattern', type: 'negative' });
-        }
-    }
-
-    // Spending factors
-    if (signals.spendingStability) {
-        const sp = signals.spendingStability;
-        if (sp.volatility === 'Low' || sp.volatility === 'Very Low') {
-            factors.push({ text: 'Consistent spending patterns', type: 'positive' });
-        } else if (sp.volatility === 'High' || sp.volatility === 'Very High') {
-            factors.push({ text: 'High spending volatility detected', type: 'negative' });
-        }
-    }
-
-    return factors;
-}
-
-export default {
-    WEIGHTS,
-    calculatePaymentReliabilityScore,
-    calculateSavingsStabilityScore,
-    calculateIncomeConsistencyScore,
-    calculateSpendingStabilityScore,
-    calculateTrustScore,
-    getConfidenceLevel,
-    getRiskTier,
-    generateFactors,
-};

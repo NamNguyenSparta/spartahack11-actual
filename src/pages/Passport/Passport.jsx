@@ -1,189 +1,204 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, Copy, Link2, Share2, AlertCircle, Lock } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { Shield, Copy, Check, AlertTriangle, Lock, Users, Brain, ExternalLink } from 'lucide-react';
 import './Passport.css';
 
 export default function Passport() {
-    const { currentPersona, passportGenerated, generatePassport, getStatusColor } = useApp();
+    const { persona, analysis } = useApp();
+    const [isGenerated, setIsGenerated] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    const { trustScore, consensus, confidenceLevel, riskTier, agents } = analysis;
+    const agentResults = Object.values(agents);
+
+    const handleGenerate = () => {
+        setIsGenerated(true);
+    };
+
     const handleCopy = () => {
-        navigator.clipboard.writeText(`https://credence.app/verify/${currentPersona.id}`);
+        const shareUrl = `https://credence.app/verify/${persona.id}-${Date.now()}`;
+        navigator.clipboard.writeText(shareUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const handleGenerate = () => {
-        generatePassport();
-    };
-
-    // Summary items based on persona
-    const getSummaryItems = () => {
-        const items = [];
-        if (currentPersona.signals.paymentReliability.score >= 70) {
-            items.push({ text: 'Consistent rent payments', verified: true });
-        }
-        if (currentPersona.signals.savingsStability.score >= 70) {
-            items.push({ text: 'Stable savings pattern', verified: true });
-        }
-        if (currentPersona.signals.spendingStability.score >= 70) {
-            items.push({ text: 'Low spending volatility', verified: true });
-        }
-        if (currentPersona.signals.incomeConsistency.score >= 70) {
-            items.push({ text: 'Regular income deposits', verified: true });
-        }
-        if (currentPersona.signals.paymentReliability.score < 70) {
-            items.push({ text: 'Some late payments detected', verified: false });
-        }
-        if (currentPersona.signals.savingsStability.score < 50) {
-            items.push({ text: 'Low savings buffer', verified: false });
-        }
-        return items;
-    };
-
-    if (!passportGenerated) {
-        return (
-            <div className="passport">
-                <div className="page-header">
-                    <div>
-                        <h1>Trust Passport</h1>
-                        <p>Generate a shareable reputation summary</p>
-                    </div>
-                </div>
-
-                <div className="passport-empty">
-                    <div className="empty-icon">
-                        <Shield size={64} />
-                    </div>
-                    <h2>Generate Your Trust Passport</h2>
-                    <p>Create a privacy-safe reputation summary to share with landlords, lenders, or services.</p>
-                    <div className="empty-features">
-                        <div className="feature-item">
-                            <CheckCircle2 size={18} />
-                            <span>Proves behavioral reliability</span>
-                        </div>
-                        <div className="feature-item">
-                            <Lock size={18} />
-                            <span>No bank balance exposed</span>
-                        </div>
-                        <div className="feature-item">
-                            <Share2 size={18} />
-                            <span>Easy to share via link</span>
-                        </div>
-                    </div>
-                    <button className="btn btn-primary btn-lg" onClick={handleGenerate}>
-                        Generate Trust Passport
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    const summaryItems = getSummaryItems();
+    // Generate summary items from agent analysis
+    const summaryItems = agentResults.map(agent => ({
+        text: agent.reasoning.split('.')[0] + '.',
+        verified: agent.status === 'positive',
+        agent: agent.name.replace(' Agent', ''),
+        icon: agent.icon,
+    }));
 
     return (
         <div className="passport">
-            <div className="page-header">
+            <div className="passport-header">
                 <div>
                     <h1>Trust Passport</h1>
-                    <p>Share proof of reliability, not your bank history.</p>
-                </div>
-                <div className="header-actions">
-                    <button className="btn btn-secondary" onClick={handleCopy}>
-                        {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
-                        {copied ? 'Copied!' : 'Copy Link'}
-                    </button>
+                    <p className="subtitle">Generate a shareable reputation summary</p>
                 </div>
             </div>
 
-            {/* Passport Card */}
-            <div className="passport-card">
-                <div className="passport-header">
-                    <div className="passport-logo">
-                        <div className="logo-icon">
-                            <Shield size={24} />
+            {!isGenerated ? (
+                <div className="passport-intro">
+                    <div className="intro-card">
+                        <div className="intro-icon">
+                            <Shield size={48} />
                         </div>
-                        <div>
-                            <span className="logo-name">Credence</span>
-                            <span className="logo-subtitle">Trust Passport</span>
-                        </div>
-                    </div>
-                    <div className="passport-badge">
-                        <CheckCircle2 size={14} />
-                        Verified
-                    </div>
-                </div>
-
-                {/* Score Section */}
-                <div className="passport-score-section">
-                    <div className="passport-score">
-                        <span className="score-value">{currentPersona.trustScore}</span>
-                        <span className="score-label">Trust Score</span>
-                    </div>
-                    <div className="score-meta">
-                        <div className={`confidence ${getStatusColor(currentPersona.trustScore)}`}>
-                            <strong>Confidence Level:</strong> {currentPersona.confidenceLevel}
-                        </div>
-                        <div className="persona-info">
-                            <span className="avatar">{currentPersona.avatar}</span>
-                            <span>{currentPersona.name}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Reputation Summary */}
-                <div className="passport-summary">
-                    <h3>Reputation Summary</h3>
-                    <div className="summary-list">
-                        {summaryItems.map((item, i) => (
-                            <div key={i} className={`summary-item ${item.verified ? 'verified' : 'warning'}`}>
-                                {item.verified ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
-                                <span>{item.text}</span>
+                        <h2>Generate Your Trust Passport</h2>
+                        <p>
+                            Create a privacy-safe reputation summary to share
+                            with landlords, lenders, or services.
+                        </p>
+                        <div className="intro-features">
+                            <div className="feature">
+                                <Check size={16} />
+                                <span>Proves behavioral reliability</span>
                             </div>
-                        ))}
+                            <div className="feature">
+                                <Lock size={16} />
+                                <span>No bank balance exposed</span>
+                            </div>
+                            <div className="feature">
+                                <ExternalLink size={16} />
+                                <span>Easy to share via link</span>
+                            </div>
+                        </div>
+                        <button className="btn btn-primary btn-lg" onClick={handleGenerate}>
+                            Generate Trust Passport
+                        </button>
                     </div>
                 </div>
+            ) : (
+                <div className="passport-content">
+                    {/* Passport Card */}
+                    <div className="passport-card">
+                        <div className="passport-card-header">
+                            <div className="passport-logo">
+                                <Shield size={24} />
+                                <span>Credence</span>
+                            </div>
+                            <div className="passport-badge">
+                                <Check size={14} />
+                                Verified
+                            </div>
+                        </div>
 
-                {/* Privacy Notice */}
-                <div className="privacy-notice">
-                    <Lock size={16} />
-                    <p>This passport proves financial behavior patterns, not bank balances or transactions.</p>
-                </div>
+                        <div className="passport-score-section">
+                            <div className="passport-score">
+                                <span className="score-value">{trustScore}</span>
+                                <span className="score-label">Trust Score</span>
+                            </div>
+                            <div className="passport-meta">
+                                <div className="meta-item">
+                                    <span className="meta-label">Confidence</span>
+                                    <span className="meta-value" data-level={confidenceLevel.toLowerCase()}>
+                                        {confidenceLevel}
+                                    </span>
+                                </div>
+                                <div className="meta-item">
+                                    <span className="meta-label">Risk Tier</span>
+                                    <span className="meta-value">{riskTier}</span>
+                                </div>
+                            </div>
+                        </div>
 
-                {/* Share Section */}
-                <div className="passport-share">
-                    <div className="share-link">
-                        <Link2 size={16} />
-                        <span className="share-url">credence.app/verify/{currentPersona.id}</span>
-                    </div>
-                    <button className="btn btn-primary" onClick={handleCopy}>
-                        <Share2 size={16} />
-                        Share Passport
-                    </button>
-                </div>
-            </div>
+                        {/* Agent Consensus */}
+                        <div className="passport-consensus">
+                            <div className="consensus-header">
+                                <Brain size={16} />
+                                <span>AI Council Consensus</span>
+                            </div>
+                            <div className="consensus-bar">
+                                <div
+                                    className="consensus-fill"
+                                    style={{ width: `${consensus}%` }}
+                                    data-level={consensus >= 80 ? 'high' : consensus >= 60 ? 'medium' : 'low'}
+                                />
+                            </div>
+                            <span className="consensus-text">{consensus}% agent alignment</span>
+                        </div>
 
-            {/* What This Proves */}
-            <div className="proof-section">
-                <h2>What This Passport Proves</h2>
-                <div className="proof-grid">
-                    <div className="proof-card card">
-                        <CheckCircle2 size={24} className="proof-icon success" />
-                        <h4>Behavioral Reliability</h4>
-                        <p>Pattern-based analysis of payment history and financial consistency.</p>
+                        {/* Summary Items */}
+                        <div className="passport-summary">
+                            <h4>Behavioral Indicators</h4>
+                            <div className="summary-list">
+                                {summaryItems.slice(0, 4).map((item, index) => (
+                                    <div key={index} className="summary-item" data-verified={item.verified}>
+                                        <span className="summary-icon">{item.icon}</span>
+                                        <div className="summary-content">
+                                            <span className="summary-agent">{item.agent}</span>
+                                            <span className="summary-text">{item.text}</span>
+                                        </div>
+                                        {item.verified ? (
+                                            <Check size={16} className="verified-icon" />
+                                        ) : (
+                                            <AlertTriangle size={16} className="warning-icon" />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Privacy Notice */}
+                        <div className="passport-privacy">
+                            <Lock size={14} />
+                            <span>
+                                This passport shares behavioral signals only. No sensitive banking data is exposed.
+                            </span>
+                        </div>
                     </div>
-                    <div className="proof-card card">
-                        <Lock size={24} className="proof-icon info" />
-                        <h4>Privacy Protected</h4>
-                        <p>No raw transaction data, account numbers, or exact balances shared.</p>
+
+                    {/* Actions */}
+                    <div className="passport-actions">
+                        <div className="share-section">
+                            <h3>Share Your Passport</h3>
+                            <p>Copy the link below to share with landlords, lenders, or services.</p>
+                            <div className="share-input">
+                                <input
+                                    type="text"
+                                    value={`https://credence.app/verify/${persona.id.slice(0, 8)}`}
+                                    readOnly
+                                />
+                                <button className="btn btn-primary" onClick={handleCopy}>
+                                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                                    {copied ? 'Copied!' : 'Copy Link'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="info-section">
+                            <h4>What verifiers see:</h4>
+                            <ul>
+                                <li>Your Trust Score ({trustScore}/100)</li>
+                                <li>AI Council consensus ({consensus}%)</li>
+                                <li>Behavioral indicator summary</li>
+                                <li>Verification timestamp</li>
+                            </ul>
+                            <h4>What they don't see:</h4>
+                            <ul>
+                                <li>Bank account balances</li>
+                                <li>Transaction details</li>
+                                <li>Income amounts</li>
+                                <li>Personal financial data</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div className="proof-card card">
-                        <Shield size={24} className="proof-icon purple" />
-                        <h4>Trust Infrastructure</h4>
-                        <p>Built for landlords, lenders, and services who need trust signals.</p>
+
+                    {/* Positioning Copy */}
+                    <div className="passport-positioning">
+                        <Users size={20} />
+                        <div>
+                            <p className="positioning-main">
+                                Your trust score was determined by {agentResults.length} AI agents evaluating different financial behaviors.
+                            </p>
+                            <p className="positioning-sub">
+                                Credence converts financial behavior into trust signals. Share proof of reliability, not your bank history.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

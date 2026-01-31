@@ -1,4 +1,4 @@
-// Mock data for demo mode (used when USE_MOCK_DATA=true or Snowflake unavailable)
+// Mock personas with raw data for multi-agent analysis
 
 export const mockPersonas = {
     'responsible-student': {
@@ -7,10 +7,22 @@ export const mockPersonas = {
         description: 'Strong rent history, small but stable savings, part-time income',
         avatar: '🎓',
         rawData: {
-            paymentReliability: { on_time_count: 11, total_count: 12 },
-            savingsStability: { growth_percent: 5.2, avg_balance: 780 },
-            incomeConsistency: { months_with_income: 6, avg_deposit: 1200, deposit_stddev: 150, source: 'Part-time + Aid' },
-            spendingStability: { volatility_percent: 15 },
+            paymentReliability: {
+                onTime: 11,
+                total: 12,
+            },
+            savingsStability: {
+                trend: '+5.2',
+                avgBalance: 780,
+            },
+            incomeConsistency: {
+                months: 6,
+                source: 'Part-time + Aid',
+            },
+            spendingStability: {
+                volatility: 15,
+                pattern: 'consistent',
+            },
         },
         history: {
             score: [
@@ -39,16 +51,29 @@ export const mockPersonas = {
             ],
         },
     },
+
     'volatile-freelancer': {
         id: 'volatile-freelancer',
         name: 'Volatile Freelancer',
         description: 'Irregular income, spending spikes, moderate payment reliability',
         avatar: '💼',
         rawData: {
-            paymentReliability: { on_time_count: 8, total_count: 12 },
-            savingsStability: { growth_percent: -2.1, avg_balance: 900 },
-            incomeConsistency: { months_with_income: 4, avg_deposit: 3500, deposit_stddev: 1400, source: 'Variable' },
-            spendingStability: { volatility_percent: 48 },
+            paymentReliability: {
+                onTime: 8,
+                total: 12,
+            },
+            savingsStability: {
+                trend: '-2.1',
+                avgBalance: 900,
+            },
+            incomeConsistency: {
+                months: 4,
+                source: 'Variable Freelance',
+            },
+            spendingStability: {
+                volatility: 48,
+                pattern: 'erratic',
+            },
         },
         history: {
             score: [
@@ -77,16 +102,29 @@ export const mockPersonas = {
             ],
         },
     },
+
     'perfect-payer': {
         id: 'perfect-payer',
         name: 'Perfect Payer, Low Savings',
         description: 'All bills on time, very low savings buffer, stable but low income',
         avatar: '⭐',
         rawData: {
-            paymentReliability: { on_time_count: 12, total_count: 12 },
-            savingsStability: { growth_percent: 0.5, avg_balance: 320 },
-            incomeConsistency: { months_with_income: 6, avg_deposit: 2800, deposit_stddev: 100, source: 'Salary' },
-            spendingStability: { volatility_percent: 10 },
+            paymentReliability: {
+                onTime: 12,
+                total: 12,
+            },
+            savingsStability: {
+                trend: '+0.5',
+                avgBalance: 320,
+            },
+            incomeConsistency: {
+                months: 6,
+                source: 'Salary',
+            },
+            spendingStability: {
+                volatility: 10,
+                pattern: 'predictable',
+            },
         },
         history: {
             score: [
@@ -117,13 +155,14 @@ export const mockPersonas = {
     },
 };
 
-export const mockUsers = {
-    'demo-user': {
+export const mockUsers = [
+    {
         id: 'demo-user',
         email: 'demo@credence.app',
+        password: 'password123', // In real app, this would be hashed
         name: 'Demo User',
-        personaId: 'responsible-student',
+        persona: 'responsible-student',
     },
-};
+];
 
 export default { mockPersonas, mockUsers };

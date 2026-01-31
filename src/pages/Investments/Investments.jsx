@@ -1,269 +1,173 @@
 import { useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, TrendingDown, ArrowUpRight, Bitcoin, DollarSign, Gem, Coins, Filter, Plus, RefreshCw } from 'lucide-react';
-import Header from '../../components/Layout/Header';
+import { useApp } from '../../context/AppContext';
+import { TrendingUp, TrendingDown, DollarSign, Wallet, Link as LinkIcon, CheckCircle, Loader2, Sparkles, BarChart3, RefreshCw } from 'lucide-react';
+import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import './Investments.css';
 
-const portfolioData = {
-    stocks: [
-        { symbol: 'AAPL', name: 'Apple Inc.', shares: 15, price: 178.50, change: +2.34, changePercent: +1.32, value: 2677.50 },
-        { symbol: 'GOOGL', name: 'Alphabet Inc.', shares: 8, price: 141.80, change: -1.20, changePercent: -0.84, value: 1134.40 },
-        { symbol: 'MSFT', name: 'Microsoft Corp.', shares: 12, price: 378.90, change: +4.56, changePercent: +1.22, value: 4546.80 },
-        { symbol: 'TSLA', name: 'Tesla Inc.', shares: 5, price: 248.20, change: -3.80, changePercent: -1.51, value: 1241.00 },
-        { symbol: 'NVDA', name: 'NVIDIA Corp.', shares: 10, price: 495.60, change: +12.30, changePercent: +2.55, value: 4956.00 },
-    ],
-    crypto: [
-        { symbol: 'BTC', name: 'Bitcoin', amount: 0.15, price: 43250.00, change: +850, changePercent: +2.0, value: 6487.50 },
-        { symbol: 'ETH', name: 'Ethereum', amount: 2.5, price: 2280.00, change: +45.20, changePercent: +2.02, value: 5700.00 },
-        { symbol: 'SOL', name: 'Solana', amount: 25, price: 98.50, change: +5.80, changePercent: +6.26, value: 2462.50 },
-        { symbol: 'MATIC', name: 'Polygon', amount: 500, price: 0.82, change: -0.03, changePercent: -3.53, value: 410.00 },
-    ],
-    forex: [
-        { pair: 'EUR/USD', position: 'Long', units: 10000, entryPrice: 1.0820, currentPrice: 1.0875, pnl: +55.00 },
-        { pair: 'GBP/USD', position: 'Short', units: 5000, entryPrice: 1.2650, currentPrice: 1.2590, pnl: +30.00 },
-        { pair: 'USD/JPY', position: 'Long', units: 8000, entryPrice: 148.50, currentPrice: 149.20, pnl: +37.58 },
-    ],
-};
-
-const portfolioHistory = [
-    { date: 'Jan', value: 25000 },
-    { date: 'Feb', value: 27500 },
-    { date: 'Mar', value: 26800 },
-    { date: 'Apr', value: 29200 },
-    { date: 'May', value: 31500 },
-    { date: 'Jun', value: 34800 },
+const MOCK_HOLDINGS = [
+    { id: 1, symbol: 'AAPL', name: 'Apple Inc.', shares: 5, price: 182.50, change: 2.4, type: 'stock', icon: '🍎' },
+    { id: 2, symbol: 'BTC', name: 'Bitcoin', shares: 0.015, price: 42150, change: -1.2, type: 'crypto', icon: '₿' },
+    { id: 3, symbol: 'ETH', name: 'Ethereum', shares: 0.5, price: 2280, change: 3.1, type: 'crypto', icon: 'Ξ' },
+    { id: 4, symbol: 'VOO', name: 'S&P 500 ETF', shares: 3, price: 425.20, change: 0.8, type: 'stock', icon: '📈' },
+    { id: 5, symbol: 'EUR/USD', name: 'Euro/Dollar', shares: 500, price: 1.085, change: 0.12, type: 'forex', icon: '💱' },
 ];
 
-const allocation = [
-    { name: 'Stocks', value: 45, color: '#ec4899' },
-    { name: 'Crypto', value: 35, color: '#8b5cf6' },
-    { name: 'Forex', value: 15, color: '#06b6d4' },
-    { name: 'Cash', value: 5, color: '#10b981' },
+const PORTFOLIO_HISTORY = [
+    { month: 'Aug', value: 2200 },
+    { month: 'Sep', value: 2450 },
+    { month: 'Oct', value: 2100 },
+    { month: 'Nov', value: 2680 },
+    { month: 'Dec', value: 2950 },
+    { month: 'Jan', value: 3245 },
 ];
 
 export default function Investments() {
-    const [activeTab, setActiveTab] = useState('stocks');
+    const { currentPersona: persona } = useApp();
+    const [robinhoodConnected, setRobinhoodConnected] = useState(false);
+    const [coinbaseConnected, setCoinbaseConnected] = useState(false);
+    const [connecting, setConnecting] = useState(null);
 
-    const totalValue = portfolioData.stocks.reduce((sum, s) => sum + s.value, 0) +
-        portfolioData.crypto.reduce((sum, c) => sum + c.value, 0);
+    const handleConnect = (broker) => {
+        setConnecting(broker);
+        setTimeout(() => {
+            if (broker === 'robinhood') setRobinhoodConnected(true);
+            if (broker === 'coinbase') setCoinbaseConnected(true);
+            setConnecting(null);
+        }, 1500);
+    };
 
-    const tabs = [
-        { id: 'stocks', label: 'Stocks', icon: TrendingUp },
-        { id: 'crypto', label: 'Crypto', icon: Bitcoin },
-        { id: 'forex', label: 'Forex', icon: DollarSign },
-    ];
+    const totalValue = MOCK_HOLDINGS.reduce((acc, h) => acc + (h.shares * h.price), 0);
+    const totalChange = 3.2; // Example 24h change
+
+    if (!persona) return <div className="p-8 text-center">Loading...</div>;
 
     return (
-        <>
-            <Header title="Investments" subtitle="Manage your investment portfolio" />
-            <div className="page-content">
-                <div className="investments-layout">
-                    {/* Top Stats Row */}
-                    <div className="portfolio-stats">
-                        <div className="stat-card primary">
-                            <div className="stat-icon"><Gem size={24} /></div>
-                            <div className="stat-content">
-                                <span className="stat-label">Total Portfolio Value</span>
-                                <span className="stat-value">${totalValue.toLocaleString()}</span>
-                                <span className="stat-change positive">
-                                    <TrendingUp size={14} /> +12.5% this month
+        <div className="investments-page">
+            {/* Header */}
+            <div className="invest-header">
+                <div>
+                    <div className="invest-title">
+                        <TrendingUp size={32} className="text-success-600" />
+                        <h1>Investment Portfolio</h1>
+                    </div>
+                    <p className="invest-subtitle">Track stocks, crypto, and forex in one place.</p>
+                </div>
+                <div className="connect-section">
+                    <button
+                        className={`broker-btn ${robinhoodConnected ? 'connected' : ''}`}
+                        onClick={() => handleConnect('robinhood')}
+                        disabled={robinhoodConnected || connecting === 'robinhood'}
+                    >
+                        {connecting === 'robinhood' ? <Loader2 size={16} className="animate-spin" /> : robinhoodConnected ? <CheckCircle size={16} /> : <LinkIcon size={16} />}
+                        {robinhoodConnected ? 'Robinhood ✓' : 'Link Robinhood'}
+                    </button>
+                    <button
+                        className={`broker-btn ${coinbaseConnected ? 'connected' : ''}`}
+                        onClick={() => handleConnect('coinbase')}
+                        disabled={coinbaseConnected || connecting === 'coinbase'}
+                    >
+                        {connecting === 'coinbase' ? <Loader2 size={16} className="animate-spin" /> : coinbaseConnected ? <CheckCircle size={16} /> : <LinkIcon size={16} />}
+                        {coinbaseConnected ? 'Coinbase ✓' : 'Link Coinbase'}
+                    </button>
+                </div>
+            </div>
+
+            {/* Stats */}
+            <div className="invest-stats">
+                <div className="invest-stat-card">
+                    <span className="label">Total Portfolio</span>
+                    <div className="value">${totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                    <div className={`change ${totalChange >= 0 ? 'positive' : 'negative'}`}>
+                        {totalChange >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                        {totalChange >= 0 ? '+' : ''}{totalChange}% (24h)
+                    </div>
+                </div>
+                <div className="invest-stat-card">
+                    <span className="label">Stocks</span>
+                    <div className="value">$2,188</div>
+                    <div className="change positive">+1.8%</div>
+                </div>
+                <div className="invest-stat-card">
+                    <span className="label">Crypto</span>
+                    <div className="value">$1,772</div>
+                    <div className="change negative">-0.5%</div>
+                </div>
+                <div className="invest-stat-card">
+                    <span className="label">Forex</span>
+                    <div className="value">$542</div>
+                    <div className="change positive">+0.1%</div>
+                </div>
+            </div>
+
+            {/* Main Grid */}
+            <div className="invest-grid">
+                {/* Holdings */}
+                <div className="holdings-card">
+                    <h2>Your Holdings</h2>
+                    {MOCK_HOLDINGS.map(holding => (
+                        <div key={holding.id} className="holding-item">
+                            <div className={`holding-icon ${holding.type}`}>
+                                {holding.icon}
+                            </div>
+                            <div className="holding-info">
+                                <span className="holding-name">{holding.name}</span>
+                                <span className="holding-shares">{holding.shares} {holding.symbol}</span>
+                            </div>
+                            <div className="holding-value">
+                                <span className="holding-price">${(holding.shares * holding.price).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                                <span className={`holding-change ${holding.change >= 0 ? 'positive' : 'negative'}`}>
+                                    {holding.change >= 0 ? '+' : ''}{holding.change}%
                                 </span>
                             </div>
                         </div>
-                        <div className="stat-card">
-                            <div className="stat-icon stocks"><TrendingUp size={24} /></div>
-                            <div className="stat-content">
-                                <span className="stat-label">Stocks</span>
-                                <span className="stat-value">${portfolioData.stocks.reduce((s, x) => s + x.value, 0).toLocaleString()}</span>
+                    ))}
+                </div>
+
+                {/* AI Advisor */}
+                <div className="hub-column">
+                    <div className="ai-advisor-card">
+                        <div className="ai-advisor-header">
+                            <div className="ai-avatar">🤖</div>
+                            <div>
+                                <h3>Investment Agent</h3>
+                                <p>Powered by Gemini</p>
                             </div>
                         </div>
-                        <div className="stat-card">
-                            <div className="stat-icon crypto"><Bitcoin size={24} /></div>
-                            <div className="stat-content">
-                                <span className="stat-label">Crypto</span>
-                                <span className="stat-value">${portfolioData.crypto.reduce((s, x) => s + x.value, 0).toLocaleString()}</span>
-                            </div>
+                        <div className="ai-message">
+                            Based on your student status and risk profile, I recommend focusing on <strong>low-cost index funds (VOO)</strong> over individual stocks.
+                            Your current allocation is 60% stocks, 30% crypto, 10% forex – crypto is slightly overweight for a student portfolio.
                         </div>
-                        <div className="stat-card">
-                            <div className="stat-icon forex"><Coins size={24} /></div>
-                            <div className="stat-content">
-                                <span className="stat-label">Forex P&L</span>
-                                <span className="stat-value positive">+${portfolioData.forex.reduce((s, x) => s + x.pnl, 0).toFixed(2)}</span>
-                            </div>
+                        <div className="ai-actions">
+                            <button className="btn btn-primary btn-sm">
+                                <Sparkles size={14} /> Optimize
+                            </button>
+                            <button className="btn btn-ghost btn-sm">
+                                <RefreshCw size={14} /> Refresh
+                            </button>
                         </div>
                     </div>
 
-                    {/* Main Content */}
-                    <div className="investments-main">
-                        {/* Left: Holdings List */}
-                        <div className="holdings-section">
-                            <div className="card">
-                                <div className="holdings-header">
-                                    <div className="portfolio-tabs">
-                                        {tabs.map((tab) => (
-                                            <button
-                                                key={tab.id}
-                                                className={`portfolio-tab ${activeTab === tab.id ? 'active' : ''}`}
-                                                onClick={() => setActiveTab(tab.id)}
-                                            >
-                                                <tab.icon size={16} />
-                                                <span>{tab.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className="holdings-actions">
-                                        <button className="btn btn-ghost btn-sm"><Filter size={16} /> Filter</button>
-                                        <button className="btn btn-primary btn-sm"><Plus size={16} /> Add</button>
-                                    </div>
-                                </div>
-
-                                {activeTab === 'stocks' && (
-                                    <div className="holdings-table">
-                                        <div className="table-header">
-                                            <span>Asset</span>
-                                            <span>Shares</span>
-                                            <span>Price</span>
-                                            <span>Change</span>
-                                            <span>Value</span>
-                                        </div>
-                                        {portfolioData.stocks.map((stock) => (
-                                            <div key={stock.symbol} className="table-row">
-                                                <div className="asset-info">
-                                                    <div className="asset-icon stock">{stock.symbol.charAt(0)}</div>
-                                                    <div>
-                                                        <span className="asset-symbol">{stock.symbol}</span>
-                                                        <span className="asset-name">{stock.name}</span>
-                                                    </div>
-                                                </div>
-                                                <span className="shares">{stock.shares}</span>
-                                                <span className="price">${stock.price.toFixed(2)}</span>
-                                                <span className={`change ${stock.change >= 0 ? 'positive' : 'negative'}`}>
-                                                    {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                                                </span>
-                                                <span className="value">${stock.value.toLocaleString()}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {activeTab === 'crypto' && (
-                                    <div className="holdings-table">
-                                        <div className="table-header">
-                                            <span>Asset</span>
-                                            <span>Amount</span>
-                                            <span>Price</span>
-                                            <span>Change</span>
-                                            <span>Value</span>
-                                        </div>
-                                        {portfolioData.crypto.map((coin) => (
-                                            <div key={coin.symbol} className="table-row">
-                                                <div className="asset-info">
-                                                    <div className="asset-icon crypto">{coin.symbol.charAt(0)}</div>
-                                                    <div>
-                                                        <span className="asset-symbol">{coin.symbol}</span>
-                                                        <span className="asset-name">{coin.name}</span>
-                                                    </div>
-                                                </div>
-                                                <span className="shares">{coin.amount}</span>
-                                                <span className="price">${coin.price.toLocaleString()}</span>
-                                                <span className={`change ${coin.changePercent >= 0 ? 'positive' : 'negative'}`}>
-                                                    {coin.changePercent >= 0 ? '+' : ''}{coin.changePercent.toFixed(2)}%
-                                                </span>
-                                                <span className="value">${coin.value.toLocaleString()}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {activeTab === 'forex' && (
-                                    <div className="holdings-table">
-                                        <div className="table-header">
-                                            <span>Pair</span>
-                                            <span>Position</span>
-                                            <span>Entry</span>
-                                            <span>Current</span>
-                                            <span>P&L</span>
-                                        </div>
-                                        {portfolioData.forex.map((fx) => (
-                                            <div key={fx.pair} className="table-row">
-                                                <div className="asset-info">
-                                                    <div className="asset-icon forex">$</div>
-                                                    <div>
-                                                        <span className="asset-symbol">{fx.pair}</span>
-                                                        <span className="asset-name">{fx.units.toLocaleString()} units</span>
-                                                    </div>
-                                                </div>
-                                                <span className={`position-badge ${fx.position.toLowerCase()}`}>{fx.position}</span>
-                                                <span className="price">{fx.entryPrice.toFixed(4)}</span>
-                                                <span className="price">{fx.currentPrice.toFixed(4)}</span>
-                                                <span className={`change ${fx.pnl >= 0 ? 'positive' : 'negative'}`}>
-                                                    {fx.pnl >= 0 ? '+' : ''}${fx.pnl.toFixed(2)}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Right: Charts */}
-                        <div className="charts-section">
-                            {/* Portfolio Chart */}
-                            <div className="card">
-                                <div className="card-header">
-                                    <h3>Portfolio Performance</h3>
-                                    <button className="btn-icon"><RefreshCw size={16} /></button>
-                                </div>
-                                <div className="portfolio-chart">
-                                    <ResponsiveContainer width="100%" height={180}>
-                                        <AreaChart data={portfolioHistory}>
-                                            <defs>
-                                                <linearGradient id="portGrad" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stopColor="#ec4899" stopOpacity={0.3} />
-                                                    <stop offset="100%" stopColor="#ec4899" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                                            <YAxis hide />
-                                            <Tooltip formatter={(v) => `$${v.toLocaleString()}`} contentStyle={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: 12 }} />
-                                            <Area type="monotone" dataKey="value" stroke="#ec4899" strokeWidth={2} fill="url(#portGrad)" />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-
-                            {/* Allocation Chart */}
-                            <div className="card">
-                                <div className="card-header">
-                                    <h3>Asset Allocation</h3>
-                                </div>
-                                <div className="allocation-content">
-                                    <div className="allocation-chart">
-                                        <ResponsiveContainer width="100%" height={160}>
-                                            <PieChart>
-                                                <Pie data={allocation} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value">
-                                                    {allocation.map((entry, index) => (
-                                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                                    ))}
-                                                </Pie>
-                                            </PieChart>
-                                        </ResponsiveContainer>
-                                    </div>
-                                    <div className="allocation-legend">
-                                        {allocation.map((item) => (
-                                            <div key={item.name} className="legend-item">
-                                                <span className="legend-dot" style={{ background: item.color }} />
-                                                <span className="legend-label">{item.name}</span>
-                                                <span className="legend-value">{item.value}%</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+                    {/* Chart */}
+                    <div className="holdings-card" style={{ marginTop: 'var(--space-6)' }}>
+                        <h2>Portfolio Growth</h2>
+                        <div style={{ height: '180px', marginTop: 'var(--space-4)' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={PORTFOLIO_HISTORY}>
+                                    <defs>
+                                        <linearGradient id="portfolioGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
+                                    <Tooltip contentStyle={{ background: 'var(--bg-card)', borderRadius: '8px', border: '1px solid var(--border-light)' }} />
+                                    <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2} fill="url(#portfolioGrad)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         </div>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }

@@ -1,134 +1,187 @@
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
-import { TrendingUp, TrendingDown, Plus, Minus, CheckCircle2, AlertCircle, Activity } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { TrendingUp, TrendingDown, AlertCircle, CheckCircle, MessageCircle, Brain, Users } from 'lucide-react';
 import './Insights.css';
 
 export default function Insights() {
-    const { currentPersona, getStatusColor } = useApp();
+    const { currentPersona: persona, analysis, agentDiscussion, getStatusColor } = useApp();
+
+    const { trustScore, consensus, agents } = analysis;
+
+    if (!persona || !analysis) {
+        return <div className="p-8 text-center">Loading Credence Data...</div>;
+    }
+
+    const agentResults = Object.values(agents);
+
+    // Separate positive and negative factors
+    const positiveAgents = agentResults.filter(a => a.status === 'positive');
+    const negativeAgents = agentResults.filter(a => a.status === 'negative');
+    const neutralAgents = agentResults.filter(a => a.status === 'neutral');
+
+    // Safe access to persona data
+    const historyPayments = persona.history?.payments || [];
+    const historySavings = persona.history?.savings || [];
+    const spendingVolatility = persona.signals?.spendingStability?.volatility || 0;
 
     return (
         <div className="insights">
             {/* Header */}
-            <div className="page-header">
+            <div className="insights-header">
                 <div>
-                    <h1>Why is my score this?</h1>
-                    <p>Explainable breakdown of your Trust Reputation</p>
+                    <h1>Score Insights</h1>
+                    <p className="subtitle">
+                        Credence makes financial trust transparent and explainable.
+                    </p>
                 </div>
-                <div className="score-badge">
-                    <span className="score">{currentPersona.trustScore}</span>
-                    <span className="label">Current Score</span>
+                <div className="score-snapshot">
+                    <span className="snapshot-score">{trustScore}</span>
+                    <span className="snapshot-label">Trust Score</span>
                 </div>
             </div>
 
-            {/* What Built Your Reputation */}
-            <section className="factors-section">
+            {/* What Built Your Score */}
+            <div className="card factors-card">
                 <h2>What built your reputation this month?</h2>
+                <p className="card-subtitle">AI agents analyzed your financial behavior and identified these factors.</p>
+
                 <div className="factors-grid">
-                    {currentPersona.factors.map((factor, i) => (
-                        <div key={i} className={`factor-card card ${factor.type}`}>
-                            <div className={`factor-icon ${factor.type}`}>
-                                {factor.type === 'positive' ? <Plus size={18} /> : <Minus size={18} />}
+                    {/* Positive Factors */}
+                    <div className="factors-column positive">
+                        <div className="factors-header">
+                            <CheckCircle size={18} />
+                            <h3>Strengthening Factors</h3>
+                        </div>
+                        {positiveAgents.map((agent) => (
+                            <div key={agent.id} className="factor-item">
+                                <span className="factor-icon">{agent.icon}</span>
+                                <div className="factor-content">
+                                    <span className="factor-title">{agent.name.replace(' Agent', '')}</span>
+                                    <p className="factor-text">{agent.reasoning}</p>
+                                </div>
+                                <span className="factor-score">+{agent.contribution}</span>
                             </div>
-                            <span className="factor-text">{factor.text}</span>
+                        ))}
+                        {positiveAgents.length === 0 && (
+                            <p className="no-factors">No strong positive factors detected.</p>
+                        )}
+                    </div>
+
+                    {/* Negative Factors */}
+                    <div className="factors-column negative">
+                        <div className="factors-header">
+                            <AlertCircle size={18} />
+                            <h3>Areas for Improvement</h3>
+                        </div>
+                        {[...negativeAgents, ...neutralAgents].map((agent) => (
+                            <div key={agent.id} className="factor-item">
+                                <span className="factor-icon">{agent.icon}</span>
+                                <div className="factor-content">
+                                    <span className="factor-title">{agent.name.replace(' Agent', '')}</span>
+                                    <p className="factor-text">{agent.reasoning}</p>
+                                </div>
+                                <span className="factor-score" data-warning={agent.status === 'neutral'}>
+                                    +{agent.contribution}
+                                </span>
+                            </div>
+                        ))}
+                        {negativeAgents.length === 0 && neutralAgents.length === 0 && (
+                            <p className="no-factors">No major concerns detected.</p>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* AI Trust Council Discussion */}
+            <div className="card discussion-card">
+                <div className="discussion-header">
+                    <div className="discussion-title">
+                        <Brain size={20} className="brain-icon" />
+                        <h2>Inside the AI Trust Council</h2>
+                    </div>
+                    <div className="consensus-badge" data-level={consensus >= 80 ? 'high' : consensus >= 60 ? 'medium' : 'low'}>
+                        <Users size={14} />
+                        {consensus}% Aligned
+                    </div>
+                </div>
+                <p className="card-subtitle">
+                    Watch how our AI agents discuss and analyze your financial profile.
+                </p>
+
+                <div className="discussion-feed">
+                    {agentDiscussion.map((entry, index) => (
+                        <div
+                            key={index}
+                            className="discussion-message"
+                            data-sentiment={entry.sentiment}
+                            style={{ animationDelay: `${index * 0.1}s` }}
+                        >
+                            <div className="message-avatar">
+                                <span>{entry.icon}</span>
+                            </div>
+                            <div className="message-content">
+                                <span className="message-agent">{entry.agent}</span>
+                                <p className="message-text">{entry.statement}</p>
+                            </div>
+                            <div className="message-indicator" data-sentiment={entry.sentiment} />
                         </div>
                     ))}
                 </div>
-            </section>
+            </div>
 
-            {/* Charts Grid */}
+            {/* Charts Section */}
             <div className="charts-grid">
-                {/* Payment Punctuality Timeline */}
-                <div className="chart-card card">
-                    <div className="card-header">
-                        <div>
-                            <h3>Payment Punctuality</h3>
-                            <p className="subtitle">On-time vs late payments</p>
-                        </div>
-                        <div className="header-stat">
-                            <span className="stat-value">{currentPersona.signals.paymentReliability.onTime}/{currentPersona.signals.paymentReliability.total}</span>
-                            <span className="stat-label">On Time</span>
-                        </div>
-                    </div>
+                {/* Payment Punctuality Chart */}
+                <div className="card chart-card">
+                    <h3>Payment Punctuality</h3>
+                    <p className="card-subtitle">On-time vs late payments over 6 months</p>
                     <div className="chart-container">
                         <ResponsiveContainer width="100%" height={200}>
-                            <BarChart data={currentPersona.history.payments} barGap={4}>
-                                <XAxis
-                                    dataKey="month"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#94a3b8', fontSize: 11 }}
-                                />
+                            <BarChart data={historyPayments}>
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
                                 <YAxis hide />
                                 <Tooltip
                                     contentStyle={{
-                                        background: 'white',
-                                        border: '1px solid #e2e8f0',
-                                        borderRadius: 12,
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                        background: 'var(--bg-card)',
+                                        border: '1px solid var(--border-light)',
+                                        borderRadius: '8px',
                                     }}
                                 />
-                                <Bar dataKey="onTime" name="On Time" stackId="a" radius={[4, 4, 0, 0]}>
-                                    {currentPersona.history.payments.map((_, index) => (
-                                        <Cell key={index} fill="#10b981" />
-                                    ))}
-                                </Bar>
-                                <Bar dataKey="late" name="Late" stackId="a" radius={[4, 4, 0, 0]}>
-                                    {currentPersona.history.payments.map((_, index) => (
-                                        <Cell key={index} fill="#ef4444" />
-                                    ))}
-                                </Bar>
+                                <Bar dataKey="onTime" fill="var(--success-500)" radius={[4, 4, 0, 0]} name="On Time" />
+                                <Bar dataKey="late" fill="var(--error-400)" radius={[4, 4, 0, 0]} name="Late" />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                    <div className="chart-legend">
-                        <span className="legend-item"><span className="dot success" /> On Time</span>
-                        <span className="legend-item"><span className="dot danger" /> Late</span>
-                    </div>
                 </div>
 
-                {/* Savings Balance Trend */}
-                <div className="chart-card card">
-                    <div className="card-header">
-                        <div>
-                            <h3>Savings Trend</h3>
-                            <p className="subtitle">6-month savings pattern</p>
-                        </div>
-                        <div className={`trend-indicator ${currentPersona.signals.savingsStability.trend.startsWith('+') ? 'positive' : 'negative'}`}>
-                            {currentPersona.signals.savingsStability.trend.startsWith('+') ?
-                                <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                            {currentPersona.signals.savingsStability.trend}
-                        </div>
-                    </div>
+                {/* Savings Trend Chart */}
+                <div className="card chart-card">
+                    <h3>Savings Trend</h3>
+                    <p className="card-subtitle">Your savings balance over 6 months</p>
                     <div className="chart-container">
                         <ResponsiveContainer width="100%" height={200}>
-                            <AreaChart data={currentPersona.history.savings}>
+                            <AreaChart data={historySavings}>
                                 <defs>
                                     <linearGradient id="savingsGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                                        <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="var(--secondary-500)" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="var(--secondary-500)" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis
-                                    dataKey="month"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#94a3b8', fontSize: 11 }}
-                                />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
                                 <YAxis hide />
                                 <Tooltip
-                                    formatter={(value) => [`$${value}`, 'Savings']}
+                                    formatter={(value) => [`$${value}`, 'Balance']}
                                     contentStyle={{
-                                        background: 'white',
-                                        border: '1px solid #e2e8f0',
-                                        borderRadius: 12,
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                        background: 'var(--bg-card)',
+                                        border: '1px solid var(--border-light)',
+                                        borderRadius: '8px',
                                     }}
                                 />
                                 <Area
                                     type="monotone"
                                     dataKey="amount"
-                                    stroke="#8b5cf6"
-                                    strokeWidth={2.5}
+                                    stroke="var(--secondary-500)"
+                                    strokeWidth={2}
                                     fill="url(#savingsGrad)"
                                 />
                             </AreaChart>
@@ -137,103 +190,80 @@ export default function Insights() {
                 </div>
             </div>
 
-            {/* Spending Volatility Meter */}
-            <section className="volatility-section">
-                <div className="card volatility-card">
-                    <div className="card-header">
-                        <div>
-                            <h3>Spending Volatility Meter</h3>
-                            <p className="subtitle">How predictable is your spending?</p>
-                        </div>
-                        <Activity size={24} className="header-icon" />
-                    </div>
+            {/* Agent Detail Breakdown */}
+            <div className="card breakdown-card">
+                <h2>Detailed Signal Breakdown</h2>
+                <p className="card-subtitle">Each AI agent's individual assessment and contribution.</p>
 
-                    <div className="volatility-meter">
-                        <div className="meter-bar">
-                            <div
-                                className="meter-fill"
-                                style={{
-                                    width: `${100 - currentPersona.signals.spendingStability.score}%`,
-                                }}
-                            />
-                            <div
-                                className="meter-indicator"
-                                style={{ left: `${100 - currentPersona.signals.spendingStability.score}%` }}
-                            />
-                        </div>
-                        <div className="meter-labels">
-                            <span>Low</span>
-                            <span>Medium</span>
-                            <span>High</span>
-                        </div>
+                <div className="breakdown-table">
+                    <div className="breakdown-header">
+                        <span>Agent</span>
+                        <span>Focus Area</span>
+                        <span>Score</span>
+                        <span>Contribution</span>
+                        <span>Confidence</span>
+                        <span>Status</span>
                     </div>
-
-                    <div className={`volatility-status ${getStatusColor(currentPersona.signals.spendingStability.score)}`}>
-                        {currentPersona.signals.spendingStability.score >= 70 ? (
-                            <>
-                                <CheckCircle2 size={18} />
-                                <div>
-                                    <strong>Low volatility detected</strong>
-                                    <p>Your spending patterns are consistent and predictable.</p>
-                                </div>
-                            </>
-                        ) : currentPersona.signals.spendingStability.score >= 50 ? (
-                            <>
-                                <AlertCircle size={18} />
-                                <div>
-                                    <strong>Moderate volatility detected</strong>
-                                    <p>Some spending spikes detected. Consider more consistent patterns.</p>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <AlertCircle size={18} />
-                                <div>
-                                    <strong>High volatility detected</strong>
-                                    <p>Variable spending patterns may impact your Trust Score.</p>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            {/* Signal Breakdown */}
-            <section className="signal-section">
-                <h2>Signal Breakdown</h2>
-                <div className="signal-grid">
-                    {Object.entries(currentPersona.signals).map(([key, signal]) => {
-                        const labels = {
-                            paymentReliability: { name: 'Payment Reliability', weight: '40%' },
-                            savingsStability: { name: 'Savings Stability', weight: '25%' },
-                            incomeConsistency: { name: 'Income Consistency', weight: '20%' },
-                            spendingStability: { name: 'Spending Stability', weight: '15%' },
-                        };
-                        const statusColor = getStatusColor(signal.score);
-                        return (
-                            <div key={key} className="signal-card card">
-                                <div className="signal-header">
-                                    <span className="signal-name">{labels[key].name}</span>
-                                    <span className="signal-weight">{labels[key].weight}</span>
-                                </div>
-                                <div className="signal-score-row">
-                                    <div className="progress progress-thick">
-                                        <div
-                                            className={`progress-bar progress-bar-${statusColor}`}
-                                            style={{ width: `${signal.score}%` }}
-                                        />
-                                    </div>
-                                    <span className="signal-value">{signal.score}</span>
-                                </div>
-                                <div className={`signal-status ${statusColor}`}>
-                                    {statusColor === 'success' ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
-                                    {signal.label}
-                                </div>
+                    {agentResults.map((agent) => (
+                        <div key={agent.id} className="breakdown-row">
+                            <div className="breakdown-agent">
+                                <span className="agent-icon">{agent.icon}</span>
+                                <span>{agent.name.replace(' Agent', '')}</span>
                             </div>
-                        );
-                    })}
+                            <span className="breakdown-focus">{agent.focus}</span>
+                            <span className="breakdown-score">{agent.score}</span>
+                            <span className="breakdown-contrib">+{agent.contribution}</span>
+                            <div className="breakdown-confidence">
+                                <div className="confidence-mini-bar">
+                                    <div
+                                        className="confidence-mini-fill"
+                                        style={{ width: `${agent.confidence}%` }}
+                                    />
+                                </div>
+                                <span>{agent.confidence}%</span>
+                            </div>
+                            <span
+                                className="breakdown-status"
+                                style={{ color: getStatusColor(agent.score) }}
+                            >
+                                {agent.status === 'positive' ? '✓ Strong' : agent.status === 'neutral' ? '◐ Moderate' : '✗ Weak'}
+                            </span>
+                        </div>
+                    ))}
                 </div>
-            </section>
+            </div>
+
+            {/* Spending Volatility Meter */}
+            <div className="card volatility-card">
+                <h3>Spending Volatility Analysis</h3>
+                <p className="card-subtitle">
+                    The Spending Behavior Agent detected a volatility of {spendingVolatility}%
+                </p>
+                <div className="volatility-meter">
+                    <div className="volatility-scale">
+                        <span className="scale-label">Low</span>
+                        <div className="scale-bar">
+                            <div
+                                className="scale-indicator"
+                                style={{ left: `${Math.min(100, spendingVolatility)}%` }}
+                            />
+                        </div>
+                        <span className="scale-label">High</span>
+                    </div>
+                    <div className="volatility-zones">
+                        <div className="zone zone-good" />
+                        <div className="zone zone-moderate" />
+                        <div className="zone zone-high" />
+                    </div>
+                </div>
+                <p className="volatility-insight">
+                    {spendingVolatility < 25
+                        ? '✓ Your spending is consistent and predictable.'
+                        : spendingVolatility < 40
+                            ? '◐ Some spending variations detected. Generally manageable.'
+                            : '⚠ High spending volatility may impact your Trust Score.'}
+                </p>
+            </div>
         </div>
     );
 }

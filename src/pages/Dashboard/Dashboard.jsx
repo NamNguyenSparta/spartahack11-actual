@@ -1,167 +1,191 @@
-import { useNavigate } from 'react-router-dom';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, Area, AreaChart } from 'recharts';
-import { TrendingUp, Shield, Sparkles, ArrowUpRight, ChevronRight, CheckCircle2, AlertCircle, CreditCard, Wallet, PiggyBank, TrendingDown } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { TrendingUp, Shield, Sparkles, Brain, Users, ChevronRight, Wallet, CreditCard, Target, GraduationCap, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
 export default function Dashboard() {
+    const { currentPersona: persona, analysis, agents, getStatusColor, getStatusLabel, user } = useApp();
     const navigate = useNavigate();
-    const { currentPersona, getStatusColor, getStatusLabel } = useApp();
 
-    const pillars = [
-        {
-            key: 'paymentReliability',
-            label: 'Payment Reliability',
-            weight: '40%',
-            icon: CreditCard,
-            description: 'Rent, utilities, subscriptions'
-        },
-        {
-            key: 'savingsStability',
-            label: 'Savings Stability',
-            weight: '25%',
-            icon: PiggyBank,
-            description: 'Consistent saving patterns'
-        },
-        {
-            key: 'incomeConsistency',
-            label: 'Income Consistency',
-            weight: '20%',
-            icon: Wallet,
-            description: 'Regular income deposits'
-        },
-        {
-            key: 'spendingStability',
-            label: 'Spending Stability',
-            weight: '15%',
-            icon: TrendingUp,
-            description: 'Predictable behavior'
-        },
-    ];
+    const { trustScore, consensus, confidenceLevel, riskTier } = analysis;
 
-    const scoreChange = currentPersona.history.score[currentPersona.history.score.length - 1].score -
-        currentPersona.history.score[0].score;
+    if (!persona || !analysis) {
+        return <div className="p-8 text-center">Loading Credence Data...</div>;
+    }
+
+    const agentResults = Object.values(analysis.agents);
+    const userName = user?.name || 'Student';
+    const accountBalance = persona.wealth?.accountBalance || 2450;
+    const savingsGoal = persona.wealth?.savingsGoal || 5000;
+    const savingsProgress = Math.round((accountBalance / savingsGoal) * 100);
+
+    // Calculate score change
+    const history = persona.history?.score || [];
+    const lastMonth = history.length > 1 ? history[history.length - 2]?.score : trustScore;
+    const scoreChange = trustScore - lastMonth;
+
+    // Get next timeline event
+    const activeEvent = persona.timeline?.find(e => e.status === 'active');
 
     return (
         <div className="dashboard">
-            {/* Header */}
-            <div className="page-header">
-                <div>
-                    <h1>Your Trust Reputation</h1>
-                    <p>Credence converts financial behavior into trust signals.</p>
+            {/* Welcome Header */}
+            <div className="welcome-section">
+                <div className="welcome-content">
+                    <h1 className="welcome-title">Hey {userName}! 👋</h1>
+                    <p className="welcome-subtitle">Here's your financial overview for today</p>
                 </div>
-                <div className="header-actions">
-                    <div className="persona-badge">
-                        <span className="avatar">{currentPersona.avatar}</span>
-                        <span>{currentPersona.name}</span>
+                <div className="university-badge">
+                    <GraduationCap size={16} />
+                    <span>{persona.university || 'Michigan State University'}</span>
+                    <span className="year-badge">{persona.year || 'Freshman'}</span>
+                </div>
+            </div>
+
+            {/* Account Overview Cards */}
+            <div className="account-cards">
+                <div className="account-card balance-card">
+                    <div className="account-card-header">
+                        <Wallet size={20} />
+                        <span>Account Balance</span>
+                    </div>
+                    <div className="account-value">
+                        ${accountBalance.toLocaleString()}
+                    </div>
+                    <div className="account-meta positive">
+                        <TrendingUp size={14} />
+                        +$350 this month
+                    </div>
+                </div>
+
+                <div className="account-card savings-card">
+                    <div className="account-card-header">
+                        <Target size={20} />
+                        <span>Savings Goal</span>
+                    </div>
+                    <div className="savings-progress-container">
+                        <div className="savings-amounts">
+                            <span className="current">${accountBalance.toLocaleString()}</span>
+                            <span className="goal">/ ${savingsGoal.toLocaleString()}</span>
+                        </div>
+                        <div className="savings-bar">
+                            <div className="savings-fill" style={{ width: `${Math.min(savingsProgress, 100)}%` }}></div>
+                        </div>
+                        <span className="savings-percent">{savingsProgress}% complete</span>
+                    </div>
+                </div>
+
+                <div className="account-card next-payment-card">
+                    <div className="account-card-header">
+                        <Calendar size={20} />
+                        <span>Current Semester</span>
+                    </div>
+                    <div className="next-payment-info">
+                        <span className="payment-label">{activeEvent?.title || 'Spring 2025'}</span>
+                        <span className="payment-date">{activeEvent?.term || 'In Progress'}</span>
+                    </div>
+                    <button className="btn btn-sm btn-secondary" onClick={() => navigate('/student')}>
+                        View Timeline
+                    </button>
+                </div>
+
+                <div className="account-card score-preview-card">
+                    <div className="account-card-header">
+                        <Shield size={20} />
+                        <span>Trust Score</span>
+                    </div>
+                    <div className="score-preview">
+                        <span className="score-big">{trustScore}</span>
+                        <span className="score-label">/ 100</span>
+                    </div>
+                    <div className={`score-change ${scoreChange >= 0 ? 'positive' : 'negative'}`}>
+                        <TrendingUp size={14} />
+                        {scoreChange >= 0 ? '+' : ''}{scoreChange} pts
                     </div>
                 </div>
             </div>
 
-            {/* Score Section */}
-            <div className="score-section">
-                <div className="score-card card">
+            {/* Main Grid */}
+            <div className="dashboard-grid">
+                {/* Trust Score Card */}
+                <div className="card score-card">
                     <div className="score-display">
-                        <div className="score-ring">
-                            <svg viewBox="0 0 160 160">
-                                <defs>
-                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stopColor="#0ea5e9" />
-                                        <stop offset="50%" stopColor="#8b5cf6" />
-                                        <stop offset="100%" stopColor="#10b981" />
-                                    </linearGradient>
-                                </defs>
+                        <div className="score-circle">
+                            <svg viewBox="0 0 120 120" className="score-ring">
+                                <circle cx="60" cy="60" r="54" className="ring-bg" />
                                 <circle
-                                    cx="80" cy="80" r="70"
-                                    fill="none"
-                                    stroke="#e2e8f0"
-                                    strokeWidth="12"
-                                />
-                                <circle
-                                    cx="80" cy="80" r="70"
-                                    fill="none"
-                                    stroke="url(#scoreGradient)"
-                                    strokeWidth="12"
-                                    strokeLinecap="round"
-                                    strokeDasharray={440}
-                                    strokeDashoffset={440 - (440 * currentPersona.trustScore / 100)}
-                                    style={{ transform: 'rotate(-90deg)', transformOrigin: 'center' }}
+                                    cx="60"
+                                    cy="60"
+                                    r="54"
+                                    className="ring-progress"
+                                    style={{
+                                        strokeDasharray: `${(trustScore / 100) * 339.292} 339.292`,
+                                        stroke: trustScore >= 70 ? 'var(--primary-500)' : trustScore >= 50 ? 'var(--warning-500)' : 'var(--error-500)',
+                                    }}
                                 />
                             </svg>
-                            <div className="score-inner">
-                                <span className="score-value">{currentPersona.trustScore}</span>
-                                <span className="score-label">Trust Score</span>
+                            <div className="score-value">
+                                <span className="score-number">{trustScore}</span>
+                                <span className="score-label">TRUST SCORE</span>
                             </div>
                         </div>
-                        <div className="score-info">
-                            <div className={`score-change ${scoreChange >= 0 ? 'positive' : 'negative'}`}>
-                                {scoreChange >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                        <div className="score-meta">
+                            <div className="score-change" data-positive={scoreChange >= 0}>
+                                <TrendingUp size={16} />
                                 <span>{scoreChange >= 0 ? '+' : ''}{scoreChange} pts this cycle</span>
                             </div>
-                            <div className={`confidence-badge badge-${getStatusColor(currentPersona.trustScore)}`}>
-                                Confidence: {currentPersona.confidenceLevel}
+                            <div className="confidence-badge" data-level={confidenceLevel.toLowerCase()}>
+                                Confidence: {confidenceLevel}
                             </div>
                         </div>
                     </div>
-
                     <div className="score-actions">
-                        <button className="btn btn-primary btn-lg" onClick={() => navigate('/passport')}>
-                            <Sparkles size={18} />
+                        <button className="btn btn-primary" onClick={() => navigate('/passport')}>
+                            <Shield size={16} />
                             Generate Trust Passport
                         </button>
-                        <button className="btn btn-secondary" onClick={() => navigate('/insights')}>
+                        <button className="btn btn-ghost" onClick={() => navigate('/insights')}>
                             View Insights
                             <ChevronRight size={16} />
                         </button>
                     </div>
                 </div>
 
-                {/* Score Trend Chart */}
-                <div className="trend-card card">
+                {/* Score Trend Card */}
+                <div className="card trend-card">
                     <div className="card-header">
-                        <div>
-                            <h3>6-Month Score Trend</h3>
-                            <p className="subtitle">Your reputation over time</p>
-                        </div>
-                        <div className={`trend-badge ${scoreChange >= 0 ? 'positive' : 'negative'}`}>
-                            {scoreChange >= 0 ? <ArrowUpRight size={14} /> : <TrendingDown size={14} />}
+                        <h3>6-Month Score Trend</h3>
+                        <span className="trend-indicator" data-positive={scoreChange >= 0}>
+                            <TrendingUp size={14} />
                             {scoreChange >= 0 ? '+' : ''}{scoreChange}
-                        </div>
+                        </span>
                     </div>
-                    <div className="chart-container">
-                        <ResponsiveContainer width="100%" height={180}>
-                            <AreaChart data={currentPersona.history.score}>
+                    <p className="card-subtitle">Your reputation over time</p>
+                    <div className="chart-container" style={{ minHeight: '120px' }}>
+                        <ResponsiveContainer width="100%" height={120}>
+                            <AreaChart data={history}>
                                 <defs>
-                                    <linearGradient id="scoreAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#0ea5e9" stopOpacity={0.3} />
-                                        <stop offset="100%" stopColor="#0ea5e9" stopOpacity={0} />
+                                    <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="var(--primary-500)" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="var(--primary-500)" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis
-                                    dataKey="month"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#94a3b8', fontSize: 11 }}
-                                />
-                                <YAxis
-                                    domain={[40, 100]}
-                                    hide
-                                />
+                                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
+                                <YAxis domain={[50, 100]} hide />
                                 <Tooltip
                                     contentStyle={{
-                                        background: 'white',
-                                        border: '1px solid #e2e8f0',
-                                        borderRadius: 12,
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                        background: 'var(--bg-card)',
+                                        border: '1px solid var(--border-light)',
+                                        borderRadius: '8px',
                                     }}
-                                    formatter={(value) => [`${value}`, 'Trust Score']}
                                 />
                                 <Area
                                     type="monotone"
                                     dataKey="score"
-                                    stroke="#0ea5e9"
-                                    strokeWidth={2.5}
-                                    fill="url(#scoreAreaGrad)"
+                                    stroke="var(--primary-500)"
+                                    strokeWidth={2}
+                                    fill="url(#scoreGradient)"
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
@@ -169,99 +193,109 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Reputation Pillars */}
-            <section className="pillars-section">
-                <h2>Reputation Pillars</h2>
-                <p className="section-subtitle">What builds your Trust Score</p>
-                <div className="pillars-grid">
-                    {pillars.map((pillar) => {
-                        const signal = currentPersona.signals[pillar.key];
-                        const statusColor = getStatusColor(signal.score);
-                        return (
-                            <div key={pillar.key} className="pillar-card card">
-                                <div className="pillar-header">
-                                    <div className={`pillar-icon ${statusColor}`}>
-                                        <pillar.icon size={20} />
-                                    </div>
-                                    <span className="pillar-weight">{pillar.weight}</span>
-                                </div>
-                                <h4>{pillar.label}</h4>
-                                <p className="pillar-desc">{pillar.description}</p>
-                                <div className="pillar-score">
-                                    <div className="progress">
-                                        <div
-                                            className={`progress-bar progress-bar-${statusColor}`}
-                                            style={{ width: `${signal.score}%` }}
-                                        />
-                                    </div>
-                                    <span className="score-num">{signal.score}</span>
-                                </div>
-                                <div className={`pillar-status ${statusColor}`}>
-                                    {statusColor === 'success' ? <CheckCircle2 size={14} /> :
-                                        statusColor === 'warning' ? <AlertCircle size={14} /> :
-                                            <AlertCircle size={14} />}
-                                    <span>{signal.label}</span>
+            {/* AI Trust Council Card */}
+            <div className="card council-card">
+                <div className="card-header">
+                    <div className="council-header">
+                        <Brain size={20} className="council-icon" />
+                        <h3>AI Trust Council</h3>
+                    </div>
+                    <div className="council-meta">
+                        <span className="agent-count">
+                            <Users size={14} />
+                            {agentResults.length} Agents
+                        </span>
+                    </div>
+                </div>
+                <p className="card-subtitle">
+                    Multiple AI agents evaluate your financial behavior from different perspectives.
+                </p>
+
+                {/* Agent Contributions */}
+                <div className="agent-contributions">
+                    {agentResults.map((agent) => (
+                        <div key={agent.id} className="agent-row" data-status={agent.status}>
+                            <div className="agent-info">
+                                <span className="agent-icon">{agent.icon}</span>
+                                <div className="agent-details">
+                                    <span className="agent-name">{agent.name.replace(' Agent', '')}</span>
+                                    <span className="agent-role">{agent.role}</span>
                                 </div>
                             </div>
-                        );
-                    })}
+                            <div className="agent-contribution">
+                                <span className="contribution-value">+{agent.contribution}</span>
+                            </div>
+                            <div className="agent-reasoning">
+                                <p>{agent.reasoning}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            </section>
 
-            {/* Quick Stats */}
-            <section className="stats-section">
-                <div className="stat-row">
-                    <div className="card stat-item">
-                        <div className="stat-icon success">
-                            <CheckCircle2 size={20} />
-                        </div>
-                        <div className="stat-content">
-                            <span className="stat-value">{currentPersona.signals.paymentReliability.onTime}/{currentPersona.signals.paymentReliability.total}</span>
-                            <span className="stat-label">On-Time Payments</span>
-                        </div>
+                {/* Consensus Bar */}
+                <div className="consensus-section">
+                    <div className="consensus-header">
+                        <span className="consensus-label">
+                            <Users size={14} />
+                            Agent Consensus Level
+                        </span>
+                        <span className="consensus-value">{consensus}%</span>
                     </div>
-                    <div className="card stat-item">
-                        <div className="stat-icon info">
-                            <PiggyBank size={20} />
-                        </div>
-                        <div className="stat-content">
-                            <span className="stat-value">{currentPersona.signals.savingsStability.trend}</span>
-                            <span className="stat-label">Savings Trend</span>
-                        </div>
+                    <div className="consensus-bar">
+                        <div
+                            className="consensus-fill"
+                            style={{ width: `${consensus}%` }}
+                            data-level={consensus >= 80 ? 'high' : consensus >= 60 ? 'medium' : 'low'}
+                        />
                     </div>
-                    <div className="card stat-item">
-                        <div className="stat-icon purple">
-                            <Wallet size={20} />
-                        </div>
-                        <div className="stat-content">
-                            <span className="stat-value">{currentPersona.signals.incomeConsistency.type}</span>
-                            <span className="stat-label">Income Type</span>
-                        </div>
-                    </div>
-                    <div className="card stat-item">
-                        <div className="stat-icon warning">
-                            <TrendingUp size={20} />
-                        </div>
-                        <div className="stat-content">
-                            <span className="stat-value">{currentPersona.signals.spendingStability.volatility}</span>
-                            <span className="stat-label">Spending Volatility</span>
-                        </div>
-                    </div>
+                    <p className="consensus-hint">
+                        Higher agreement = higher confidence in score
+                    </p>
                 </div>
-            </section>
+            </div>
+
+            {/* Reputation Pillars */}
+            <div className="pillars-section">
+                <h2>Reputation Pillars</h2>
+                <p className="section-subtitle">What builds your Trust Score</p>
+
+                <div className="pillars-grid">
+                    {agentResults.slice(0, 4).map((agent) => (
+                        <div key={agent.id} className="pillar-card">
+                            <div className="pillar-header">
+                                <span className="pillar-icon">{agent.icon}</span>
+                                <span className="pillar-score">{agent.score}%</span>
+                            </div>
+                            <h4>{agent.name.replace(' Agent', '')}</h4>
+                            <p className="pillar-focus">{agent.focus}</p>
+                            <div className="pillar-bar">
+                                <div
+                                    className="pillar-progress"
+                                    style={{
+                                        width: `${agent.score}%`,
+                                        backgroundColor: getStatusColor(agent.score),
+                                    }}
+                                />
+                            </div>
+                            <span className="pillar-status" style={{ color: getStatusColor(agent.score) }}>
+                                {getStatusLabel(agent.score)}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
             {/* CTA Banner */}
-            <div className="cta-banner card">
+            <div className="cta-banner">
                 <div className="cta-content">
-                    <Shield size={32} className="cta-icon" />
+                    <Sparkles size={24} />
                     <div>
-                        <h3>Share proof of reliability, not your bank history.</h3>
-                        <p>Generate your Trust Passport to share with landlords, lenders, or services.</p>
+                        <h3>Credence makes financial trust transparent and explainable.</h3>
+                        <p>Share your Trust Passport with landlords, lenders, and services.</p>
                     </div>
                 </div>
                 <button className="btn btn-primary" onClick={() => navigate('/passport')}>
                     Generate Passport
-                    <ChevronRight size={16} />
                 </button>
             </div>
         </div>
