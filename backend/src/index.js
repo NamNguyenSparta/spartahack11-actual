@@ -12,6 +12,9 @@ import passportRoutes from './routes/passport.js';
 import businessRoutes from './routes/business.js';
 import insightsRoutes from './routes/insights.js';
 
+// Import Snowflake service
+import snowflakeService from './services/snowflake.js';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -23,13 +26,52 @@ app.use(cors({
 app.use(express.json());
 
 // Health check
-app.get('/health', (req, res) => {
-    res.json({
+app.get('/health', async (req, res) => {
+    const health = {
         status: 'healthy',
         service: 'Credence API',
         version: '1.0.0',
-        timestamp: new Date().toISOString()
-    });
+        timestamp: new Date().toISOString(),
+        snowflake: { connected: false },
+    };
+
+    // Test Snowflake connection if not in mock mode
+    if (process.env.USE_MOCK_DATA !== 'true') {
+        try {
+            const result = await snowflakeService.testConnection();
+            health.snowflake = {
+                connected: result.success,
+                user: result.data?.USER,
+                error: result.error,
+            };
+        } catch (error) {
+            health.snowflake = { connected: false, error: error.message };
+        }
+    } else {
+        health.snowflake = { connected: false, mode: 'mock_data' };
+    }
+
+    res.json(health);
+});
+
+// Snowflake test endpoint
+app.get('/api/snowflake/test', async (req, res) => {
+    try {
+        const result = await snowflakeService.testConnection();
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Initialize Snowflake schema
+app.post('/api/snowflake/init', async (req, res) => {
+    try {
+        const result = await snowflakeService.initializeSchema();
+        res.json({ success: result });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 // API Routes
@@ -54,7 +96,7 @@ app.use((req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`
   ╔═══════════════════════════════════════════════════════╗
   ║                                                       ║
@@ -63,8 +105,24 @@ app.listen(PORT, () => {
   ║                                                       ║
   ║   → Port: ${PORT}                                        ║
   ║   → Mode: ${process.env.NODE_ENV || 'development'}                              ║
-  ║   → Mock Data: ${process.env.USE_MOCK_DATA === 'true' ? 'Enabled' : 'Disabled (Snowflake)'}                         ║
+  ║   → Data: ${process.env.USE_MOCK_DATA === 'true' ? 'Mock Data' : 'Snowflake'}                             ║
   ║                                                       ║
   ╚═══════════════════════════════════════════════════════╝
   `);
+
+    // Test Snowflake connection on startup if not in mock mode
+    if (process.env.USE_MOCK_DATA !== 'true') {
+        console.log('🔄 Testing Snowflake connection...');
+        try {
+            const result = await snowflakeService.testConnection();
+            if (result.success) {
+                console.log('✅ Snowflake connection verified');
+            } else {
+                console.log('⚠️  Snowflake connection failed:', result.error);
+                console.log('   Falling back to mock data mode');
+            }
+        } catch (error) {
+            console.log('⚠️  Snowflake error:', error.message);
+        }
+    }
 });
