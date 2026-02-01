@@ -3,7 +3,7 @@
 > **Built for those the credit system forgot.**  
 > Credence is a modern, privacy-first financial management platform designed specifically for students, young professionals, and anyone who is "credit invisible."
 
-![Credence Banner](https://img.shields.io/badge/SpartaHack-2025-blue?style=for-the-badge)
+![Credence Banner]([https://img.shields.io/badge/SpartaHack-2025-blue?style=for-the-badge](https://d112y698adiu2z.cloudfront.net/photos/production/challenge_photos/004/186/560/datas/full_width.png))
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite)
 
