@@ -9,6 +9,9 @@
 
 ---
 
+## ➡️ Try it out!
+https://credenceai.vercel.app
+
 ## 📖 What is Credence?
 
 Credence is a **complete financial life manager** for students. Unlike traditional credit scoring apps that only show you a number, Credence helps you:
