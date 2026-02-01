@@ -336,12 +336,12 @@ credence/
 
 ---
 
-## 🏆 Built for SpartaHack 2025
+## 🏆 Built for SpartaHack XI (2026)
 
-This project was created for SpartaHack 2025 with the mission of **democratizing financial trust** for students and young people who are often excluded from traditional credit systems.
+This project was created for SpartaHack XI with the mission of **democratizing financial trust** for students and young people who are often excluded from traditional credit systems.
 
 ### The Problem
-- 45 million Americans have no credit score
+- Approximately **49 million** Americans have no credit score (Oliver Wyman, 2026)
 - Students can't get apartments, loans, or credit cards
 - Traditional credit scoring ignores savings, income stability, and financial behavior
 
@@ -363,7 +363,7 @@ MIT License - Feel free to use and modify!
 
 ## 👨‍💻 Team
 
-Built with ❤️ by the Credence team at SpartaHack 2025.
+Built with ❤️ by the Credence team at SpartaHack XI.
 
 ---
 
