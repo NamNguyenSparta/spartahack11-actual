@@ -42,6 +42,8 @@ function AppRoutes() {
         <Route path="business" element={<BusinessView />} />
         <Route path="simulator" element={<Simulator />} />
       </Route>
+      {/* Catch-all: redirect unknown routes to login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
